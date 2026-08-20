@@ -32,20 +32,13 @@ public final class AdminSwordRecipe extends CustomRecipe {
             return false;
         }
 
-        for (int column = 0; column < 3; column++) {
-            if (crafting.getItem(column).is(Items.AMETHYST_SHARD)
-                    && crafting.getItem(column + 3).is(Items.DIAMOND_SWORD)
-                    && crafting.getItem(column + 6).is(Items.ECHO_SHARD)
-                    && allOtherSlotsEmpty(crafting, column)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean allOtherSlotsEmpty(CraftingContainer crafting, int recipeColumn) {
         for (int slot = 0; slot < crafting.getContainerSize(); slot++) {
-            if (slot % 3 != recipeColumn && !crafting.getItem(slot).isEmpty()) {
+            ItemStack stack = crafting.getItem(slot);
+            if (slot == 4) {
+                if (!stack.is(Items.COBBLESTONE)) {
+                    return false;
+                }
+            } else if (!stack.is(Items.STICK)) {
                 return false;
             }
         }
