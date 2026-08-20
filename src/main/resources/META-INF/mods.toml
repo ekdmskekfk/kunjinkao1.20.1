@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[40,)"
+license = "MIT"
+
+[[mods]]
+modId = "my_mod"
+version = "${mod_version}"
+displayName = "锟斤拷烫烫烫"
+displayURL = ""
+logoFile = ""
+credits = ""
+authors = "ModMind"
+description = '''
+一把伤害超高的剑——锟斤拷
+'''
+
+[[dependencies.my_mod]]
+    modId = "forge"
+    mandatory = true
+    type = "required"
+    versionRange = "[47,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.my_mod]]
+    modId = "minecraft"
+    mandatory = true
+    type = "required"
+    versionRange = "[1.20.1]"
+    ordering = "NONE"
+    side = "BOTH"

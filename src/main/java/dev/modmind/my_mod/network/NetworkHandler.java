@@ -1,0 +1,49 @@
+package dev.modmind.my_mod.network;
+
+import dev.modmind.my_mod.ModMindEntry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
+
+public class NetworkHandler {
+    private static final String PROTOCOL_VERSION = "1";
+    private static boolean registered = false;
+
+    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(ModMindEntry.MOD_ID, "protocol"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
+
+    public static void register() {
+        if (registered) {
+            return;
+        }
+        registered = true;
+        CHANNEL.registerMessage(0, ToggleDisguiseMessage.class,
+                ToggleDisguiseMessage::encode,
+                ToggleDisguiseMessage::decode,
+                ToggleDisguiseMessage::handle);
+        CHANNEL.registerMessage(1, OverwriteEffectMessage.class,
+                OverwriteEffectMessage::encode,
+                OverwriteEffectMessage::decode,
+                OverwriteEffectMessage::handle);
+        CHANNEL.registerMessage(2, ToggleOverwriteMessage.class,
+                ToggleOverwriteMessage::encode,
+                ToggleOverwriteMessage::decode,
+                ToggleOverwriteMessage::handle);
+        CHANNEL.registerMessage(3, ToggleThemeMessage.class,
+                ToggleThemeMessage::encode,
+                ToggleThemeMessage::decode,
+                ToggleThemeMessage::handle);
+        CHANNEL.registerMessage(4, AcceleratorConfigMessage.class,
+                AcceleratorConfigMessage::encode,
+                AcceleratorConfigMessage::decode,
+                AcceleratorConfigMessage::handle);
+        CHANNEL.registerMessage(5, AcceleratorShowRangeMessage.class,
+                AcceleratorShowRangeMessage::encode,
+                AcceleratorShowRangeMessage::decode,
+                AcceleratorShowRangeMessage::handle);
+    }
+}

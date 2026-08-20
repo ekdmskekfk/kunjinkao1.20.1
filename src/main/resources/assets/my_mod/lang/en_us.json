@@ -1,0 +1,17 @@
+{
+  "item.my_mod.kun_jin_kao": "Overwrite \u00b7 Unset",
+  "itemGroup.my_mod.kun_jin_kao": "Overwrite \u00b7 Unset",
+  "key.categories.my_mod": "KunJinKao TangTangTang",
+  "key.my_mod.toggle_disguise": "Toggle Disguise",
+  "key.my_mod.toggle_overwrite": "Toggle Overwrite Flow",
+  "block.my_mod.accelerator": "Accelerator Block",
+  "gui.my_mod.accelerator.title": "Time Accelerator",
+  "gui.my_mod.accelerator.multiplier": "Speed Multiplier",
+  "gui.my_mod.accelerator.radius": "Range",
+  "gui.my_mod.accelerator.footer": "Current: nearby blocks run at %s speed (range %s)",
+  "gui.my_mod.accelerator.hint": "Click the wheel sides or scroll the mouse wheel to switch",
+  "gui.my_mod.accelerator.show_range": "Show Range",
+  "gui.my_mod.accelerator.on": "ON",
+  "gui.my_mod.accelerator.off": "OFF",
+  "message.my_mod.admin_sword_not_authorized": "You are not authorized to craft the admin sword. Materials returned."
+}

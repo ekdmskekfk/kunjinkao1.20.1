@@ -1,0 +1,10 @@
+.gradle/
+build/
+run/
+logs/
+.modmind/
+.modtool/
+AGENTS_gh.md
+README_gh.md
+gradle-8.12.1.zip
+gradle-8.12.1/

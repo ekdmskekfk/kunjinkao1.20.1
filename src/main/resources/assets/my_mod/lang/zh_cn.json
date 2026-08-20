@@ -1,0 +1,17 @@
+{
+  "item.my_mod.kun_jin_kao": "覆写·断未",
+  "itemGroup.my_mod.kun_jin_kao": "覆写·断未",
+  "key.categories.my_mod": "KunJinKao TangTangTang",
+  "key.my_mod.toggle_disguise": "切换伪装",
+  "key.my_mod.toggle_overwrite": "切换覆写流程",
+  "block.my_mod.accelerator": "加速方块",
+  "gui.my_mod.accelerator.title": "时间加速器",
+  "gui.my_mod.accelerator.multiplier": "加速倍率",
+  "gui.my_mod.accelerator.radius": "加速范围",
+  "gui.my_mod.accelerator.footer": "当前效果：范围内方块以 %s 倍速运行（范围 %s）",
+  "gui.my_mod.accelerator.hint": "点击滚轮两侧或滚动鼠标滚轮切换档位",
+  "gui.my_mod.accelerator.show_range": "显示加速范围",
+  "gui.my_mod.accelerator.on": "开",
+  "gui.my_mod.accelerator.off": "关",
+  "message.my_mod.admin_sword_not_authorized": "你没有合成管理员剑的权限，材料已返还。"
+}

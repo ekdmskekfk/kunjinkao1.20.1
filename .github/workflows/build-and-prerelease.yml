@@ -1,0 +1,50 @@
+name: Build and prerelease
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.12.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.12.1'
+
+      - name: Build
+        run: gradle build --no-daemon
+
+      - name: Upload release JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kunjinkao-forge-jar
+          path: |
+            build/libs/kunjinkao_forge_1.20.1-*.jar
+            !build/libs/*-sources.jar
+          if-no-files-found: error
+
+      - name: Create or update prerelease
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: prerelease
+          name: Development prerelease
+          prerelease: true
+          make_latest: false
+          files: |
+            build/libs/kunjinkao_forge_1.20.1-*.jar
+            !build/libs/*-sources.jar

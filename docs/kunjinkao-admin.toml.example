@@ -1,0 +1,5 @@
+# Copy this list to <world save>/serverconfig/kunjinkao-admin.toml.
+# Add every Minecraft account UUID permitted to craft the hidden admin sword.
+admin_tool_uuids = [
+  "00000000-0000-0000-0000-000000000000"
+]

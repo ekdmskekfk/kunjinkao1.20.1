@@ -1,0 +1,132 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+// A build uses the incremented semantic version everywhere (mods.toml and JAR).
+// The source version is written back only after the `build` task succeeds.
+def sourceVersion = (mod_version as String)
+if (!(sourceVersion ==~ /\d+\.\d+\.\d+/)) {
+    throw new GradleException("mod_version must use major.minor.patch format, got: $sourceVersion")
+}
+def versionParts = sourceVersion.tokenize('.').collect { it.toInteger() }
+def buildVersion = "${versionParts[0]}.${versionParts[1]}.${versionParts[2] + 1}"
+version = buildVersion
+group = maven_group
+
+base {
+    archivesName = archives_base_name
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                my_mod {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            args '--nogui'
+            mods {
+                my_mod {
+                    source sourceSets.main
+                }
+            }
+        }
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'my_mod', '--all', '--output', file('src/main/resources/'), '--existing', file('src/main/resources/')
+            mods {
+                my_mod {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/main/resources' }
+
+repositories {
+    maven { url = 'https://maven.aliyun.com/repository/public' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+tasks.named('processResources', ProcessResources) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def replaceProperties = [
+            minecraft_version: minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version,
+            forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_license: mod_license,
+            mod_version: version,
+            mod_authors: mod_authors,
+            mod_description: mod_description
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                'Specification-Title'    : mod_id,
+                'Specification-Vendor'   : mod_authors,
+                'Specification-Version'  : '1',
+                'Implementation-Title'   : project.name,
+                'Implementation-Version' : project.jar.archiveVersion,
+                'Implementation-Vendor'  : mod_authors
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.named('build') {
+    doLast {
+        def propsFile = file('gradle.properties')
+        def propsText = propsFile.getText('UTF-8')
+        def updatedText = propsText.replaceFirst(/(?m)^mod_version=.*$/, "mod_version=$buildVersion")
+        if (updatedText == propsText) {
+            throw new GradleException('Could not update mod_version in gradle.properties')
+        }
+        propsFile.write(updatedText, 'UTF-8')
+        logger.lifecycle("Successfully built $project.name $buildVersion; mod_version was updated in gradle.properties.")
+    }
+}
