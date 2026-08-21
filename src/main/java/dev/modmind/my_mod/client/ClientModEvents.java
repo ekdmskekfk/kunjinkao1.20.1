@@ -4,6 +4,8 @@ import dev.modmind.my_mod.AcceleratorRegistry;
 import dev.modmind.my_mod.ModMindEntry;
 import dev.modmind.my_mod.SwordRegistry;
 import dev.modmind.my_mod.client.render.AcceleratorBlockEntityRenderer;
+import dev.modmind.my_mod.client.render.EyeHudLayer;
+import dev.modmind.my_mod.client.hud.HudOverlayRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -28,6 +30,7 @@ public class ClientModEvents {
         event.register(KunJinKaoKeyBindings.TOGGLE_DISGUISE);
         event.register(KunJinKaoKeyBindings.TOGGLE_OVERWRITE);
         event.register(KunJinKaoKeyBindings.CYCLE_THEME);
+        event.register(KunJinKaoKeyBindings.TOGGLE_TACTICAL_HUD);
     }
 
     @SubscribeEvent
@@ -35,5 +38,13 @@ public class ClientModEvents {
         event.registerAboveAll("kun_jin_kao_overwrite", (forgeGui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
             KunJinKaoOverwriteHudOverlay.render(guiGraphics, partialTick, screenWidth, screenHeight);
         });
+        event.registerAboveAll("tactical_eye_hud", (forgeGui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
+            HudOverlayRenderer.render(guiGraphics, partialTick, screenWidth, screenHeight);
+        });
+    }
+
+    @SubscribeEvent
+    public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
+        EyeHudLayer.addToPlayerRenderers(event);
     }
 }

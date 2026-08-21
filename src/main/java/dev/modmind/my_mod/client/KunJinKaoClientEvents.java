@@ -7,6 +7,7 @@ import dev.modmind.my_mod.network.NetworkHandler;
 import dev.modmind.my_mod.network.ToggleDisguiseMessage;
 import dev.modmind.my_mod.network.ToggleOverwriteMessage;
 import dev.modmind.my_mod.network.ToggleThemeMessage;
+import dev.modmind.my_mod.network.ToggleTacticalHudMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -28,12 +29,14 @@ public class KunJinKaoClientEvents {
             return;
         }
         KunJinKaoClientOverwriteEffects.tick();
+        ClientHudState.tick();
         for (int entityId : KunJinKaoClientOverwriteEffects.getActiveEntityIds()) {
             KunJinKaoClientOverwriteEffects.tickSounds(entityId);
         }
         handleToggleDisguise();
         handleToggleOverwrite();
         handleCycleTheme();
+        handleToggleTacticalHud();
     }
 
     /**
@@ -124,6 +127,22 @@ public class KunJinKaoClientEvents {
                 Component.literal("§d异象主题：" + KunJinKaoTheme.displayName(newTheme)),
                 true
         );
+    }
+
+    /**
+     * 战术 HUD 开关：使用 consumeClick，按住 H 不会重复切换。
+     */
+    private static void handleToggleTacticalHud() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || minecraft.level == null) {
+            ClientHudState.reset();
+            return;
+        }
+        if (!KunJinKaoKeyBindings.TOGGLE_TACTICAL_HUD.consumeClick()) {
+            return;
+        }
+        // HUD 是否打开由服务端白名单决定；客户端只提交请求，不自行切换状态。
+        NetworkHandler.CHANNEL.sendToServer(new ToggleTacticalHudMessage(!ClientHudState.isEnabled()));
     }
 
     @Nullable

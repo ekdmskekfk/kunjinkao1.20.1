@@ -4,6 +4,11 @@
   "key.categories.my_mod": "KunJinKao TangTangTang",
   "key.my_mod.toggle_disguise": "Toggle Disguise",
   "key.my_mod.toggle_overwrite": "Toggle Overwrite Flow",
+  "key.my_mod.toggle_hud": "Toggle Tactical HUD",
+  "hud.my_mod.function.scan": "Scan",
+  "hud.my_mod.function.target_lock": "Target Lock",
+  "hud.my_mod.function.entity_info": "Entity Analysis",
+  "hud.my_mod.function.night_vision": "Vision",
   "block.my_mod.accelerator": "Accelerator Block",
   "gui.my_mod.accelerator.title": "Time Accelerator",
   "gui.my_mod.accelerator.multiplier": "Speed Multiplier",
@@ -13,5 +18,6 @@
   "gui.my_mod.accelerator.show_range": "Show Range",
   "gui.my_mod.accelerator.on": "ON",
   "gui.my_mod.accelerator.off": "OFF",
-  "message.my_mod.admin_sword_not_authorized": "You are not authorized to craft the admin sword. Materials returned."
+  "message.my_mod.admin_sword_not_authorized": "You are not authorized to craft the admin sword. Materials returned.",
+  "message.my_mod.hud_not_authorized": "You are not on the admin whitelist and cannot enable the tactical HUD."
 }

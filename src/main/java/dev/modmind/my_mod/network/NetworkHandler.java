@@ -45,5 +45,13 @@ public class NetworkHandler {
                 AcceleratorShowRangeMessage::encode,
                 AcceleratorShowRangeMessage::decode,
                 AcceleratorShowRangeMessage::handle);
+        CHANNEL.registerMessage(6, ToggleTacticalHudMessage.class,
+                ToggleTacticalHudMessage::encode,
+                ToggleTacticalHudMessage::decode,
+                ToggleTacticalHudMessage::handle);
+        CHANNEL.registerMessage(7, TacticalHudStateMessage.class,
+                TacticalHudStateMessage::encode,
+                TacticalHudStateMessage::decode,
+                TacticalHudStateMessage::handle);
     }
 }

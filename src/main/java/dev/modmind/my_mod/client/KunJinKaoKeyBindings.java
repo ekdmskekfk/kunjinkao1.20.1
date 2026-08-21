@@ -26,4 +26,11 @@ public class KunJinKaoKeyBindings {
             GLFW.GLFW_KEY_P,
             CATEGORY
     );
+
+    public static final KeyMapping TOGGLE_TACTICAL_HUD = new KeyMapping(
+            "key.my_mod.toggle_hud",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_H,
+            CATEGORY
+    );
 }

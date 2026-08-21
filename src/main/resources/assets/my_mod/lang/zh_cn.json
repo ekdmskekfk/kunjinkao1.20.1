@@ -4,6 +4,11 @@
   "key.categories.my_mod": "KunJinKao TangTangTang",
   "key.my_mod.toggle_disguise": "切换伪装",
   "key.my_mod.toggle_overwrite": "切换覆写流程",
+  "key.my_mod.toggle_hud": "切换战术 HUD",
+  "hud.my_mod.function.scan": "扫描",
+  "hud.my_mod.function.target_lock": "锁定",
+  "hud.my_mod.function.entity_info": "分析",
+  "hud.my_mod.function.night_vision": "视觉",
   "block.my_mod.accelerator": "加速方块",
   "gui.my_mod.accelerator.title": "时间加速器",
   "gui.my_mod.accelerator.multiplier": "加速倍率",
@@ -13,5 +18,6 @@
   "gui.my_mod.accelerator.show_range": "显示加速范围",
   "gui.my_mod.accelerator.on": "开",
   "gui.my_mod.accelerator.off": "关",
-  "message.my_mod.admin_sword_not_authorized": "你没有合成管理员剑的权限，材料已返还。"
+  "message.my_mod.admin_sword_not_authorized": "你没有合成管理员剑的权限，材料已返还。",
+  "message.my_mod.hud_not_authorized": "你不在管理员白名单中，无法开启战术 HUD。"
 }
