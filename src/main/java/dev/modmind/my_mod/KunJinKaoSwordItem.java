@@ -2,7 +2,6 @@ package dev.modmind.my_mod;
 
 import java.util.List;
 
-import dev.modmind.my_mod.client.KunJinKaoItemRenderer;
 import dev.modmind.my_mod.entity.DiamondProjectile;
 import dev.modmind.my_mod.event.KunJinKaoDeathEventHandler;
 import dev.modmind.my_mod.event.KunJinKaoProtectionHandler;
@@ -24,7 +23,6 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
 
@@ -37,25 +35,6 @@ public class KunJinKaoSwordItem extends SwordItem {
 
     public KunJinKaoSwordItem(Tier tier, int attackDamageModifier, float attackSpeedModifier, Properties properties) {
         super(tier, attackDamageModifier, attackSpeedModifier, properties);
-    }
-
-    // ===== 客户端渲染扩展：自定义 1.20.1 Forge 客户端物品渲染器 =====
-
-    @Override
-    public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return KunJinKaoItemRendererHolder.INSTANCE;
-            }
-        });
-    }
-
-    /**
-     * 静态持有者：避免在类加载时触碰 Minecraft 客户端实例，服务端加载该物品类完全安全。
-     */
-    private static final class KunJinKaoItemRendererHolder {
-        private static final KunJinKaoItemRenderer INSTANCE = new KunJinKaoItemRenderer();
     }
 
     // ===== 伪装状态（NBT 标记，CustomModelData 驱动模型 override） =====
