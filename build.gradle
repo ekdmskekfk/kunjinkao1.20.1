@@ -13,6 +13,7 @@ if (!(sourceVersion ==~ /\d+\.\d+\.\d+/)) {
 }
 def versionParts = sourceVersion.tokenize('.').collect { it.toInteger() }
 def buildVersion = "${versionParts[0]}.${versionParts[1]}.${versionParts[2] + 1}"
+def releaseDirectory = file('F:/mcmodli/tang/forge1.20.1mod')
 version = buildVersion
 group = maven_group
 
@@ -104,6 +105,7 @@ tasks.named('processResources', ProcessResources) {
 }
 
 jar {
+    destinationDirectory.set(releaseDirectory)
     manifest {
         attributes([
                 'Specification-Title'    : mod_id,

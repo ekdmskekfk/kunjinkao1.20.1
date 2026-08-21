@@ -8,6 +8,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
@@ -44,6 +46,7 @@ public class KunJinKaoProtectionHandler {
         var abilities = player.getAbilities();
 
         if (hasSword) {
+            clearHarmfulEffects(player);
             if (!abilities.mayfly) {
                 abilities.mayfly = true;
                 player.onUpdateAbilities();
@@ -65,6 +68,14 @@ public class KunJinKaoProtectionHandler {
             data.remove(KILL_BY_OVERWRITE_KEY);
             data.remove(KunJinKaoDeathEventHandler.MARK_KEY);
             data.remove(KunJinKaoDeathEventHandler.LOOTING_MODE_ENTITY_KEY);
+        }
+    }
+
+    private static void clearHarmfulEffects(Player player) {
+        for (MobEffectInstance effect : player.getActiveEffects()) {
+            if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+                player.removeEffect(effect.getEffect());
+            }
         }
     }
 
