@@ -9,6 +9,7 @@ public final class HudFunctionManager {
 
     @Nullable
     private static HudFunction activeFunction;
+    private static boolean nightVisionEnabled;
 
     private HudFunctionManager() {
     }
@@ -32,6 +33,10 @@ public final class HudFunctionManager {
     }
 
     public static boolean isActive(HudFunction function) {
-        return activeFunction == function;
+        return activeFunction == function || (function == HudFunction.NIGHT_VISION && nightVisionEnabled);
+    }
+
+    public static void setNightVisionEnabled(boolean enabled) {
+        nightVisionEnabled = enabled;
     }
 }

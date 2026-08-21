@@ -8,6 +8,8 @@ import dev.modmind.my_mod.network.ToggleDisguiseMessage;
 import dev.modmind.my_mod.network.ToggleOverwriteMessage;
 import dev.modmind.my_mod.network.ToggleThemeMessage;
 import dev.modmind.my_mod.network.ToggleTacticalHudMessage;
+import dev.modmind.my_mod.client.hud.HudScreen;
+import dev.modmind.my_mod.client.hud.HudEntityScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -29,6 +31,7 @@ public class KunJinKaoClientEvents {
             return;
         }
         KunJinKaoClientOverwriteEffects.tick();
+        SlashWaveClientEffects.tick();
         ClientHudState.tick();
         for (int entityId : KunJinKaoClientOverwriteEffects.getActiveEntityIds()) {
             KunJinKaoClientOverwriteEffects.tickSounds(entityId);
@@ -136,6 +139,10 @@ public class KunJinKaoClientEvents {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null || minecraft.level == null) {
             ClientHudState.reset();
+            return;
+        }
+        if (minecraft.screen != null && !(minecraft.screen instanceof HudScreen)
+                && !(minecraft.screen instanceof HudEntityScreen)) {
             return;
         }
         if (!KunJinKaoKeyBindings.TOGGLE_TACTICAL_HUD.consumeClick()) {

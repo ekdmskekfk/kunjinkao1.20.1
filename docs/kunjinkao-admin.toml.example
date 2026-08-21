@@ -1,5 +1,14 @@
-# Copy this list to <world save>/serverconfig/kunjinkao-admin.toml.
-# Add every Minecraft account UUID permitted to craft the hidden admin sword.
+# Copy this list to <Minecraft instance or dedicated server>/config/kunjinkao-admin.toml.
+# This is a global list shared by every world in that instance/server.
+# Add every Minecraft account UUID permitted to use administrator features.
 admin_tool_uuids = [
   "00000000-0000-0000-0000-000000000000"
 ]
+
+[slash_wave]
+# Hold right click for this many ticks before a slash wave is released. 20 ticks = 1 second.
+charge_time = 40
+# Slash wave travel speed in blocks per tick.
+speed = 1.8
+# Maximum lifetime of a slash wave in ticks.
+lifetime = 60

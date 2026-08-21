@@ -7,8 +7,14 @@
   "key.my_mod.toggle_hud": "Toggle Tactical HUD",
   "hud.my_mod.function.scan": "Scan",
   "hud.my_mod.function.target_lock": "Target Lock",
-  "hud.my_mod.function.entity_info": "Entity Analysis",
+  "hud.my_mod.function.entity_info": "Entities",
   "hud.my_mod.function.night_vision": "Vision",
+  "screen.my_mod.tactical_hud": "Tactical HUD",
+  "screen.my_mod.entity_manager": "Entity Manager",
+  "hud.my_mod.entity_count": "Entities: %s",
+  "hud.my_mod.entity_none_selected": "Select an entity",
+  "hud.my_mod.entity_kill": "End",
+  "hud.my_mod.entity_teleport": "Teleport",
   "block.my_mod.accelerator": "Accelerator Block",
   "gui.my_mod.accelerator.title": "Time Accelerator",
   "gui.my_mod.accelerator.multiplier": "Speed Multiplier",
@@ -19,5 +25,10 @@
   "gui.my_mod.accelerator.on": "ON",
   "gui.my_mod.accelerator.off": "OFF",
   "message.my_mod.admin_sword_not_authorized": "You are not authorized to craft the admin sword. Materials returned.",
-  "message.my_mod.hud_not_authorized": "You are not on the admin whitelist and cannot enable the tactical HUD."
+  "message.my_mod.hud_not_authorized": "You are not on the admin whitelist and cannot enable the tactical HUD.",
+  "message.my_mod.hud_night_vision_enabled": "Tactical HUD night vision enabled.",
+  "message.my_mod.hud_night_vision_disabled": "Tactical HUD night vision disabled.",
+  "message.my_mod.entity_killed": "Entity ended.",
+  "message.my_mod.entity_teleported": "Teleported to entity.",
+  "message.my_mod.entity_action_failed": "The entity left this dimension or the action failed."
 }

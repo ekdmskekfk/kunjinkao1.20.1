@@ -27,7 +27,8 @@ public final class EyeHudLayer extends RenderLayer<AbstractClientPlayer, PlayerM
     private static final ResourceLocation EYE_HUD_TEXTURE =
             new ResourceLocation(ModMindEntry.MOD_ID, "textures/gui/eye_hud.png");
     private static final float LOCAL_LEFT_EYE_X = -0.14F;
-    private static final float EYE_Y = -0.29F;
+    // PlayerModel 坐标每个皮肤像素为 1/16 方块；正 Y 在头部局部坐标中向下。
+    private static final float EYE_Y = -0.29F + (1.0F / 16.0F);
     private static final float FRONT_OF_FACE_Z = -0.258F;
 
     public EyeHudLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {

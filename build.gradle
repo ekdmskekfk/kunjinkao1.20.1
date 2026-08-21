@@ -14,6 +14,7 @@ if (!(sourceVersion ==~ /\d+\.\d+\.\d+/)) {
 def versionParts = sourceVersion.tokenize('.').collect { it.toInteger() }
 def buildVersion = "${versionParts[0]}.${versionParts[1]}.${versionParts[2] + 1}"
 def releaseDirectory = file('F:/mcmodli/tang/forge1.20.1mod')
+def testModsDirectory = file('F:/mcc/mc/.minecraft/versions/KunJinKao 测试 1.20.1/mods')
 version = buildVersion
 group = maven_group
 
@@ -130,5 +131,28 @@ tasks.named('build') {
         }
         propsFile.write(updatedText, 'UTF-8')
         logger.lifecycle("Successfully built $project.name $buildVersion; mod_version was updated in gradle.properties.")
+    }
+
+    doLast {
+        def builtJar = new File(releaseDirectory, "${archives_base_name}-${buildVersion}.jar")
+        if (!builtJar.isFile()) {
+            throw new GradleException("Expected built JAR was not found: $builtJar")
+        }
+        if (!testModsDirectory.exists() && !testModsDirectory.mkdirs()) {
+            throw new GradleException("Could not create Minecraft test mods directory: $testModsDirectory")
+        }
+
+        fileTree(testModsDirectory) {
+            include "${archives_base_name}-*.jar"
+        }.files.each { oldJar ->
+            if (!oldJar.delete()) {
+                throw new GradleException("Could not replace previous test mod JAR: $oldJar")
+            }
+        }
+        copy {
+            from builtJar
+            into testModsDirectory
+        }
+        logger.lifecycle("Copied $builtJar.name to $testModsDirectory")
     }
 }

@@ -17,6 +17,8 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.List;
+
 /**
  * 锟斤拷之剑持有者保护：
  * 1. 背包任意位置（含副手）有剑时获得创造飞行，背包彻底无剑后（非创造/旁观）收回；
@@ -72,7 +74,8 @@ public class KunJinKaoProtectionHandler {
     }
 
     private static void clearHarmfulEffects(Player player) {
-        for (MobEffectInstance effect : player.getActiveEffects()) {
+        // removeEffect 会修改玩家当前效果集合；先复制后再移除，避免 ConcurrentModificationException。
+        for (MobEffectInstance effect : List.copyOf(player.getActiveEffects())) {
             if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
                 player.removeEffect(effect.getEffect());
             }

@@ -6,7 +6,8 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "1";
+    // Entity-management packets were added; require matching client and server channel layouts.
+    private static final String PROTOCOL_VERSION = "3";
     private static boolean registered = false;
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
@@ -53,5 +54,33 @@ public class NetworkHandler {
                 TacticalHudStateMessage::encode,
                 TacticalHudStateMessage::decode,
                 TacticalHudStateMessage::handle);
+        CHANNEL.registerMessage(8, ToggleHudNightVisionMessage.class,
+                ToggleHudNightVisionMessage::encode,
+                ToggleHudNightVisionMessage::decode,
+                ToggleHudNightVisionMessage::handle);
+        CHANNEL.registerMessage(9, HudNightVisionStateMessage.class,
+                HudNightVisionStateMessage::encode,
+                HudNightVisionStateMessage::decode,
+                HudNightVisionStateMessage::handle);
+        CHANNEL.registerMessage(10, RequestHudEntityListMessage.class,
+                RequestHudEntityListMessage::encode,
+                RequestHudEntityListMessage::decode,
+                RequestHudEntityListMessage::handle);
+        CHANNEL.registerMessage(11, HudEntityListMessage.class,
+                HudEntityListMessage::encode,
+                HudEntityListMessage::decode,
+                HudEntityListMessage::handle);
+        CHANNEL.registerMessage(12, ManageHudEntityMessage.class,
+                ManageHudEntityMessage::encode,
+                ManageHudEntityMessage::decode,
+                ManageHudEntityMessage::handle);
+        CHANNEL.registerMessage(13, HudEntityActionResultMessage.class,
+                HudEntityActionResultMessage::encode,
+                HudEntityActionResultMessage::decode,
+                HudEntityActionResultMessage::handle);
+        CHANNEL.registerMessage(14, SlashWaveImpactMessage.class,
+                SlashWaveImpactMessage::encode,
+                SlashWaveImpactMessage::decode,
+                SlashWaveImpactMessage::handle);
     }
 }

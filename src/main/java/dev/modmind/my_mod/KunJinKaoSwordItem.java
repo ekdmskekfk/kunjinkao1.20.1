@@ -2,7 +2,8 @@ package dev.modmind.my_mod;
 
 import java.util.List;
 
-import dev.modmind.my_mod.entity.DiamondProjectile;
+import dev.modmind.my_mod.entity.SlashWaveEntity;
+import dev.modmind.my_mod.config.AdminToolConfig;
 import dev.modmind.my_mod.event.KunJinKaoDeathEventHandler;
 import dev.modmind.my_mod.event.KunJinKaoProtectionHandler;
 import dev.modmind.my_mod.overwrite.KunJinKaoOverwriteHandler;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -32,6 +34,7 @@ public class KunJinKaoSwordItem extends SwordItem {
     private static final String DISGUISE_KEY = "CustomModelData";
     private static final String OVERWRITE_KEY = "OverwriteEnabled";
     private static final String THEME_KEY = "OverwriteTheme";
+    private static final int MAX_USE_DURATION = 72000;
 
     public KunJinKaoSwordItem(Tier tier, int attackDamageModifier, float attackSpeedModifier, Properties properties) {
         super(tier, attackDamageModifier, attackSpeedModifier, properties);
@@ -144,21 +147,61 @@ public class KunJinKaoSwordItem extends SwordItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (isDisguised(player.getItemInHand(hand))) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (isDisguised(stack)) {
             return super.use(level, player, hand);
         }
         if (player.isShiftKeyDown()) {
             return cycleMode(level, player, hand);
         }
-        // 普通右键：服务端发射钻石抛射物（命中后立即处决并伴随落雷+随机火焰）
-        if (!level.isClientSide()) {
-            DiamondProjectile projectile = new DiamondProjectile(level, player);
-            projectile.setLootingMode(getLootingMode(player.getItemInHand(hand)));
-            projectile.setOwnerId(player.getUUID());
-            projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-            level.addFreshEntity(projectile);
+        player.startUsingItem(hand);
+        return InteractionResultHolder.consume(stack);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        return MAX_USE_DURATION;
+    }
+
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
+    }
+
+    @Override
+    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
+        int elapsed = getUseDuration(stack) - remainingUseDuration;
+        if (level.isClientSide()) {
+            if (livingEntity instanceof Player player && elapsed > 0 && elapsed % 2 == 0) {
+                spawnChargeParticles(level, player);
+            }
+            return;
         }
-        return InteractionResultHolder.success(player.getItemInHand(hand));
+        if (livingEntity instanceof Player player && elapsed >= AdminToolConfig.SLASH_CHARGE_TIME.get()) {
+            releaseSlashWave(level, player);
+            player.stopUsingItem();
+        }
+    }
+
+    private void releaseSlashWave(Level level, Player player) {
+        SlashWaveEntity wave = new SlashWaveEntity(level, player);
+        wave.setPos(player.getX(), player.getEyeY() - 1.15D, player.getZ());
+        wave.setDirection(player.getYRot(), player.getXRot());
+        level.addFreshEntity(wave);
+    }
+
+    private void spawnChargeParticles(Level level, Player player) {
+        double x = player.getX();
+        double y = player.getY() + 1.0D;
+        double z = player.getZ();
+        for (int i = 0; i < 4; i++) {
+            double angle = level.random.nextDouble() * Math.PI * 2.0D;
+            double radius = 0.45D + level.random.nextDouble() * 0.35D;
+            level.addParticle(SwordRegistry.CHARGE_SPARK.get(),
+                    x + Math.cos(angle) * radius, y + level.random.nextDouble() * 0.7D,
+                    z + Math.sin(angle) * radius,
+                    0.0D, 0.01D, 0.0D);
+        }
     }
 
     @Override

@@ -34,7 +34,7 @@ public final class ModMindEntry {
      * Forge 兜底匹配的带事件总线构造器，集中完成全部注册逻辑。
      */
     public ModMindEntry(IEventBus modEventBus) {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, AdminToolConfig.SERVER_SPEC, "kunjinkao-admin.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, AdminToolConfig.COMMON_SPEC, "kunjinkao-admin.toml");
         NetworkHandler.register();
         SwordRegistry.register(modEventBus);
         AcceleratorRegistry.register(modEventBus);

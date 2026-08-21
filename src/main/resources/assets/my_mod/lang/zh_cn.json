@@ -7,8 +7,14 @@
   "key.my_mod.toggle_hud": "切换战术 HUD",
   "hud.my_mod.function.scan": "扫描",
   "hud.my_mod.function.target_lock": "锁定",
-  "hud.my_mod.function.entity_info": "分析",
+  "hud.my_mod.function.entity_info": "生物",
   "hud.my_mod.function.night_vision": "视觉",
+  "screen.my_mod.tactical_hud": "战术 HUD",
+  "screen.my_mod.entity_manager": "实体管理",
+  "hud.my_mod.entity_count": "实体：%s",
+  "hud.my_mod.entity_none_selected": "请选择一个实体",
+  "hud.my_mod.entity_kill": "结束",
+  "hud.my_mod.entity_teleport": "传送",
   "block.my_mod.accelerator": "加速方块",
   "gui.my_mod.accelerator.title": "时间加速器",
   "gui.my_mod.accelerator.multiplier": "加速倍率",
@@ -19,5 +25,10 @@
   "gui.my_mod.accelerator.on": "开",
   "gui.my_mod.accelerator.off": "关",
   "message.my_mod.admin_sword_not_authorized": "你没有合成管理员剑的权限，材料已返还。",
-  "message.my_mod.hud_not_authorized": "你不在管理员白名单中，无法开启战术 HUD。"
+  "message.my_mod.hud_not_authorized": "你不在管理员白名单中，无法开启战术 HUD。",
+  "message.my_mod.hud_night_vision_enabled": "战术 HUD 夜视已开启。",
+  "message.my_mod.hud_night_vision_disabled": "战术 HUD 夜视已关闭。",
+  "message.my_mod.entity_killed": "实体已结束。",
+  "message.my_mod.entity_teleported": "已传送至实体位置。",
+  "message.my_mod.entity_action_failed": "实体已离开当前维度或操作失败。"
 }
