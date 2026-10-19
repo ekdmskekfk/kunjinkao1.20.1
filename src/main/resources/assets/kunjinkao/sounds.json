@@ -1,0 +1,7 @@
+{
+  "swing":        { "sounds": [ { "name": "kunjinkao:swing",        "stream": false } ] },
+  "hit":          { "sounds": [ { "name": "kunjinkao:hit",          "stream": false } ] },
+  "compile_done": { "sounds": [ { "name": "kunjinkao:compile_done", "stream": false } ] },
+  "hum":          { "sounds": [ { "name": "kunjinkao:hum",          "stream": false } ] },
+  "corrupt":      { "sounds": [ { "name": "kunjinkao:corrupt",      "stream": false } ] }
+}

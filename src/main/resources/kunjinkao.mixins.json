@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.modmind.kunjinkao.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "kunjinkao.refmap.json",
+  "mixins": [
+    "ItemStackDurabilityMixin",
+    "EntityFireImmuneMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

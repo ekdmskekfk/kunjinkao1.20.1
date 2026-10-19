@@ -1,0 +1,103 @@
+package dev.modmind.kunjinkao.client;
+
+import dev.modmind.kunjinkao.client.gui.AdminPasswordScreen;
+import dev.modmind.kunjinkao.client.qol.QolClientState;
+import dev.modmind.kunjinkao.client.qol.ZoneClientState;
+import dev.modmind.kunjinkao.network.AdminEyeStatePayload;
+import dev.modmind.kunjinkao.network.AdminPasswordResultPayload;
+import dev.modmind.kunjinkao.network.CosmeticStatePayload;
+import dev.modmind.kunjinkao.network.ExcludedPlayersPayload;
+import dev.modmind.kunjinkao.network.HudEntityActionResultPayload;
+import dev.modmind.kunjinkao.network.HudEntityListPayload;
+import dev.modmind.kunjinkao.network.HudShieldHitPayload;
+// 4 个 HUD 状态回执包已合并为 HudStatePayload，导入一起收敛。
+import dev.modmind.kunjinkao.network.HudStatePayload;
+import dev.modmind.kunjinkao.network.HudTrueInvisibilityVisualPayload;
+import dev.modmind.kunjinkao.network.OverwriteEffectPayload;
+import dev.modmind.kunjinkao.network.QolStatePayload;
+import dev.modmind.kunjinkao.network.SwordDrawAnimationPayload;
+import dev.modmind.kunjinkao.network.TimeAccelStatusPayload;
+import dev.modmind.kunjinkao.network.WandPreviewResultPayload;
+import dev.modmind.kunjinkao.network.ZoneStatusPayload;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+// 1.20.1 没有 CustomPacketPayload/IPayloadContext：payload 一律以 Object 传进来（见 ClientHooks）。
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.NetworkEvent;
+
+/** Handles S2C payloads after client-only dispatch. */
+@OnlyIn(Dist.CLIENT)
+public final class ClientPayloadHandlers {
+    private ClientPayloadHandlers() {
+    }
+
+    public static void handle(Object payload, net.minecraftforge.network.NetworkEvent.Context context) {
+        context.enqueueWork(() -> {
+            if (payload instanceof OverwriteEffectPayload effect) {
+                switch (effect.phase()) {
+                    case OverwriteEffectPayload.PHASE_START -> KunJinKaoClientOverwriteEffects.start(effect.entityId(), effect.remainingTicks(), effect.phaseDetail());
+                    case OverwriteEffectPayload.PHASE_PROGRESS -> KunJinKaoClientOverwriteEffects.update(effect.entityId(), effect.remainingTicks());
+                    case OverwriteEffectPayload.PHASE_END -> KunJinKaoClientOverwriteEffects.endFlash(effect.entityId(), effect.position());
+                    case OverwriteEffectPayload.PHASE_CANCEL -> KunJinKaoClientOverwriteEffects.cancel(effect.entityId());
+                    case OverwriteEffectPayload.PHASE_DECISION -> KunJinKaoClientOverwriteEffects.startDecision(effect.entityId(), effect.remainingTicks());
+                    default -> {
+                    }
+                }
+            } else if (payload instanceof HudStatePayload state) {
+                // 合并后的 HUD 状态包：按 stateId 分派到原来那四个方法，applyXxx 的逻辑一行未改。
+                switch (state.stateId()) {
+                    case HudStatePayload.TACTICAL_HUD -> TacticalHudClientPacketHandler.apply(state.enabled(), state.authorized());
+                    case HudStatePayload.NIGHT_VISION -> TacticalHudClientPacketHandler.applyNightVision(state.enabled(), state.authorized());
+                    case HudStatePayload.TRUE_INVISIBILITY -> TacticalHudClientPacketHandler.applyTrueInvisibility(state.enabled(), state.authorized());
+                    case HudStatePayload.MAGNET -> TacticalHudClientPacketHandler.applyMagnet(state.enabled(), state.authorized());
+                    default -> {
+                        // 未知 stateId：与原来"收到认不出的包"一样，静默忽略。
+                    }
+                }
+            } else if (payload instanceof HudEntityListPayload list) {
+                TacticalHudClientPacketHandler.openEntityList(list.entities(), list.authorized());
+            } else if (payload instanceof HudEntityActionResultPayload result) {
+                TacticalHudClientPacketHandler.applyEntityAction(result.action(), result.entityUuid(), result.success(), result.authorized());
+            } else if (payload instanceof HudTrueInvisibilityVisualPayload state) {
+                TacticalHudInvisibilityVisualState.setTrueInvisible(state.playerUuid(), state.enabled());
+            } else if (payload instanceof HudShieldHitPayload hit) {
+                ShieldHitVisualState.trigger(hit.playerUuid(), hit.relativeImpactYaw(), hit.impactHeight());
+            } else if (payload instanceof WandPreviewResultPayload preview) {
+                WandPreviewRenderer.accept(preview.seq(), preview.positions());
+            } else if (payload instanceof AdminEyeStatePayload eye) {
+                AdminEyeVisualState.setEnabled(eye.playerUuid(), eye.enabled());
+            } else if (payload instanceof SwordDrawAnimationPayload animation) {
+                RemoteSwordDrawVisualState.trigger(animation.playerUuid(), animation.hand());
+            } else if (payload instanceof ExcludedPlayersPayload list) {
+                TacticalHudClientPacketHandler.applyExcludedList(list.players(), list.authorized());
+            } else if (payload instanceof AdminPasswordResultPayload result) {
+                handleAdminPasswordResult(result.authorized());
+            } else if (payload instanceof TimeAccelStatusPayload status) {
+                // 服务端心跳式推来的加速场快照：存下来，由 TimeAccelOverlayRenderer 画悬浮提示。
+                TimeAccelClientState.accept(status.entries());
+            } else if (payload instanceof QolStatePayload state) {
+                // 功能面板的一行状态：存进客户端镜像，打开着的面板每帧自己读。
+                QolClientState.accept(state);
+            } else if (payload instanceof ZoneStatusPayload status) {
+                // 选区挖掘（127）的选区与进度：存进客户端镜像，由 ZoneSelectionRenderer 每帧自己读。
+                ZoneClientState.accept(status);
+            } else if (payload instanceof CosmeticStatePayload cosmetics) {
+                // 装饰（201–203）：整表快照，存进客户端镜像后由 CosmeticRenderer 用本地玩家位置画出来。
+                CosmeticClientState.accept(cosmetics.entries());
+            }
+        });
+    }
+
+    private static void handleAdminPasswordResult(boolean authorized) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen instanceof AdminPasswordScreen) {
+            minecraft.setScreen(null);
+        }
+        if (minecraft.player != null) {
+            minecraft.player.displayClientMessage(Component.literal(authorized
+                    ? "§a管理员密码验证成功。"
+                    : "§c密码错误，已关闭验证窗口。"), true);
+        }
+    }
+}

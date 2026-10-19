@@ -1,0 +1,100 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+version = mod_version
+group = maven_group
+base { archivesName = archives_base_name }
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods { kunjinkao { source sourceSets.main } }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            args '--nogui'
+            mods { kunjinkao { source sourceSets.main } }
+        }
+        data {
+            workingDirectory project.file('run')
+            args '--mod', mod_id, '--all',
+                 '--output', file('src/generated/resources/').getAbsolutePath(),
+                 '--existing', file('src/main/resources/').getAbsolutePath()
+            mods { kunjinkao { source sourceSets.main } }
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven { url = 'https://maven.aliyun.com/repository/public' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // 编译期依赖：1.20.1 / Forge 版本，由 Modrinth 下载后放进 libs/（不进仓库）
+    compileOnly files(
+            'libs/appliedenergistics2-forge-15.4.11.jar',
+            'libs/neoecoae-20.4.2.jar',
+            // JEI 只是可选的配方预览集成；MixinExtras 是 demo 的 LevelPauseMixin 依赖
+            // （NeoForge 内置 MixinExtras，Forge 1.20.1 不内置，必须自己带）。
+            'libs/jei-1.20.1-forge-15.71.0.224.jar',
+            'libs/mixinextras-forge-0.3.5.jar',
+            // 上面那个是 jar-in-jar 包装，真类在这个内层 jar 里；编译期要它才看得到 @Local。
+            'libs/mixinextras-0.3.5.jar')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+    options.compilerArgs.addAll(['-Xmaxerrs', '2000'])
+}
+
+tasks.named('processResources', ProcessResources) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/mods.toml']) { expand replaceProperties }
+}
+
+jar {
+    manifest {
+        attributes([
+                'Specification-Title'   : mod_id,
+                'Specification-Vendor'  : mod_authors,
+                'Specification-Version' : '1',
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': mod_version,
+                'Implementation-Vendor' : mod_authors,
+        ])
+    }
+}
+jar.finalizedBy('reobfJar')

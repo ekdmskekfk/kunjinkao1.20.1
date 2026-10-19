@@ -1,0 +1,59 @@
+{
+  "parent": "kunjinkao:item/kun_jin_kao_3d",
+  "overrides": [
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.0
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_0"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.125
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_1"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.25
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_2"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.375
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_3"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.5
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_4"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.625
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_5"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.75
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_6"
+    },
+    {
+      "predicate": {
+        "kunjinkao:draw_compile": 0.875
+      },
+      "model": "kunjinkao:item/kun_jin_kao_compile_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "minecraft:item/diamond_sword"
+    }
+  ]
+}
