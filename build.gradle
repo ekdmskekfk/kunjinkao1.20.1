@@ -98,3 +98,71 @@ jar {
     }
 }
 jar.finalizedBy('reobfJar')
+
+// ---------------------------------------------------------------------------
+// 部署到测试实例（与 1.21.1 工程同一套约定，两边行为对齐）
+//
+//   gradle build                          构建 + 自动部署
+//   gradle build -PtestInstanceModsDir=.. 换目标目录
+//
+// 只删 kunjinkao*.jar —— 同目录下别人的模组一个都不碰。
+// 目标目录不存在时只打一行日志跳过（换机器、或那个实例被删了）。
+//
+// 与 1.21.1 的差别：那边是 NeoForge，jar 就是成品；这边 ForgeGradle 要把类
+// reobf 回混淆名才认得出来，所以必须等 reobfJar 跑完再复制 ——
+// 否则复制出去的是开发名（net.minecraft.* 直呼）的 jar，进游戏会直接崩。
+// ---------------------------------------------------------------------------
+def testInstanceModsDir = providers.gradleProperty('testInstanceModsDir')
+        .getOrElse('F:/mcc/mc/.minecraft/versions/KunJinKao 测试 1.20.1/mods')
+
+tasks.register('deployToTestInstance') {
+    group = 'build'
+    description = '把 reobf 后的主 jar 复制到测试实例的 mods 目录，并删除其中的旧 kunjinkao 版本'
+    dependsOn tasks.named('reobfJar')
+    doNotTrackState('目标目录在工程之外，且可能含 Gradle 读不动的文件')
+
+    def jarProvider = tasks.named('jar').flatMap { it.archiveFile }
+    def targetDir = file(testInstanceModsDir)
+
+    onlyIf { jarProvider.get().asFile.exists() }
+
+    doLast {
+        def jar = jarProvider.get().asFile
+        if (!targetDir.exists()) {
+            logger.lifecycle("[deploy] 目标目录不存在，跳过：${targetDir}")
+            return
+        }
+        // 1) 删旧的 kunjinkao（保留本次要部署的同名文件，避免白删一遍）
+        def stale = targetDir.listFiles({ f ->
+            f.isFile() && f.name.startsWith('kunjinkao') && f.name.endsWith('.jar') && f.name != jar.name
+        } as FileFilter)
+        def undeleted = []
+        (stale ?: new File[0]).sort { it.name }.each { old ->
+            old.delete()
+            if (old.exists()) {
+                undeleted << old.name
+            } else {
+                logger.lifecycle("[deploy] 删除旧版 ${old.name}")
+            }
+        }
+        if (undeleted) {
+            throw new GradleException(
+                    "[deploy] 删不掉旧版：${undeleted.join(', ')}。\n" +
+                    "  最可能的原因：【游戏正开着】，它占用了这些 jar。\n" +
+                    "  请先关掉游戏再构建 —— 否则 mods 目录里会同时存在两个同 ID 的模组，\n" +
+                    "  下次启动会因为模组重复而直接失败。")
+        }
+        // 2) 复制
+        java.nio.file.Files.copy(jar.toPath(), new File(targetDir, jar.name).toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        logger.lifecycle("[deploy] 已部署 ${jar.name} -> ${targetDir}")
+        def now = targetDir.listFiles({ f ->
+            f.isFile() && f.name.startsWith('kunjinkao') && f.name.endsWith('.jar')
+        } as FileFilter)
+        logger.lifecycle("[deploy] 该目录现有 kunjinkao：${(now ?: new File[0])*.name}")
+    }
+}
+
+tasks.named('build').configure {
+    finalizedBy 'deployToTestInstance'
+}
