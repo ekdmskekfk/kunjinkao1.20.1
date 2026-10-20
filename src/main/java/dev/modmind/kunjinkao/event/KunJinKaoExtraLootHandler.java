@@ -82,7 +82,7 @@ public final class KunJinKaoExtraLootHandler {
         }
 
         ItemStack sword = killer.getMainHandItem();
-        if (!(sword.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(sword))) {
             return;
         }
 

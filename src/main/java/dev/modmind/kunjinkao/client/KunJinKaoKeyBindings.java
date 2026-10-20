@@ -109,6 +109,22 @@ public class KunJinKaoKeyBindings {
             CATEGORY
     );
 
+    /**
+     * B 键：注入。
+     *
+     * <p>拿着任意物品按下，屏幕正中出现进度条，走完后该物品获得管理员能力
+     * （多一行注释「这个物品好像有些不一样」）。移动 / 受伤 / 换手会中断。</p>
+     *
+     * <p><b>为什么不用 I</b>：{@code I} 是「覆写开关」，而覆写是注入后仍然要用的能力之一。
+     * {@code B} 在本模组里未被占用。</p>
+     */
+    public static final KeyMapping INJECT = new KeyMapping(
+            "key.kunjinkao.inject",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_B,
+            CATEGORY
+    );
+
     // 选区作业（127）没有任何固定按键：
     //   框选 = 手持木棍右键方块（服务端 ZoneSelectionHandler 接住，客户端不发包）
     //   执行 = 在 G 面板里给「选区作业·破坏」和「选区作业·放置」两行各绑一个执行键

@@ -202,7 +202,7 @@ public final class KunJinKaoThirdPersonGrabLayer
 
         InteractionHand hand = RemoteSwordDrawVisualState.getHand(player.getUUID());
         ItemStack sword = player.getItemInHand(hand);
-        if (!(sword.getItem() instanceof KunJinKaoSwordItem) || KunJinKaoSwordItem.isDisguised(sword)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(sword)) || KunJinKaoSwordItem.isDisguised(sword)) {
             return;
         }
 

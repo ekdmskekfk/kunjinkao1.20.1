@@ -52,6 +52,6 @@ public final class SwordDrawAnimationSyncHandler {
     }
 
     private static boolean isVisibleSword(ItemStack stack) {
-        return stack.getItem() instanceof KunJinKaoSwordItem && !KunJinKaoSwordItem.isDisguised(stack);
+        return KunJinKaoSwordItem.isSwordLike(stack) && !KunJinKaoSwordItem.isDisguised(stack);
     }
 }

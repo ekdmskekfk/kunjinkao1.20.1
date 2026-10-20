@@ -103,7 +103,7 @@ public final class WandPreviewRenderer {
             return;
         }
         ItemStack sword = player.getMainHandItem();
-        if (!(sword.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(sword))) {
             reset();
             return;
         }

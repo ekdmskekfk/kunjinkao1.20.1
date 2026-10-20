@@ -32,7 +32,7 @@ public final class KunJinKaoOreDropHandler {
         }
 
         ItemStack tool = player.getMainHandItem();
-        if (!(tool.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(tool))) {
             return;
         }
 

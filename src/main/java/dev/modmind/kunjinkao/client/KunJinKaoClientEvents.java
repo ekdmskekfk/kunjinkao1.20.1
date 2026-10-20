@@ -69,6 +69,8 @@ public class KunJinKaoClientEvents {
         dev.modmind.kunjinkao.client.qol.QolTreasureScanner.tick(Minecraft.getInstance());
         // 装饰（201–203）的客户端推进：反击进度外推 + 光环/拖尾粒子。画面在 CosmeticRenderer 里。
         dev.modmind.kunjinkao.client.CosmeticClientState.tick();
+        InjectionClientState.tick();
+        handleInject();
         handleOpenAdminPassword();
         handleUndoPlacement();
         handleCycleAreaMode();
@@ -275,6 +277,32 @@ public class KunJinKaoClientEvents {
         event.setCanceled(true);
     }
 
+    /**
+     * B 键：请求开始一次注入。
+     *
+     * <p>客户端只发"请开始"，不发任何进度：进度由服务端按 tick 计时、到点自己结算。
+     * 这样即使客户端改包，也拿不到按 tick 判定的那 3 秒。</p>
+     *
+     * <p>手的选择：主手有东西就用主手；主手空着才用副手 ——
+     * 否则副手拿着盾牌/火把时会莫名其妙把副手的东西注入了。</p>
+     */
+    private static void handleInject() {
+        if (!KunJinKaoKeyBindings.INJECT.consumeClick()) {
+            return;
+        }
+        Player player = getLocalPlayer();
+        if (player == null) {
+            return;
+        }
+        InteractionHand hand = player.getMainHandItem().isEmpty()
+                ? InteractionHand.OFF_HAND
+                : InteractionHand.MAIN_HAND;
+        if (player.getItemInHand(hand).isEmpty()) {
+            return;
+        }
+        NetworkHandler.sendToServer(new dev.modmind.kunjinkao.network.InjectionStartPayload(hand));
+    }
+
     private static void handleOpenAdminPassword() {
         Minecraft minecraft = Minecraft.getInstance();
         if (KunJinKaoKeyBindings.OPEN_ADMIN_PASSWORD.consumeClick() && minecraft.player != null
@@ -437,7 +465,7 @@ public class KunJinKaoClientEvents {
     @Nullable
     private static InteractionHand findSwordHand(Player player) {
         for (InteractionHand hand : InteractionHand.values()) {
-            if (player.getItemInHand(hand).getItem() instanceof KunJinKaoSwordItem) {
+            if (KunJinKaoSwordItem.isSwordLike(player.getItemInHand(hand))) {
                 return hand;
             }
         }

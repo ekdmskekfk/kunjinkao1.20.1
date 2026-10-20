@@ -13,6 +13,7 @@ import dev.modmind.kunjinkao.network.HudShieldHitPayload;
 // 4 个 HUD 状态回执包已合并为 HudStatePayload，导入一起收敛。
 import dev.modmind.kunjinkao.network.HudStatePayload;
 import dev.modmind.kunjinkao.network.HudTrueInvisibilityVisualPayload;
+import dev.modmind.kunjinkao.network.InjectionStatePayload;
 import dev.modmind.kunjinkao.network.OverwriteEffectPayload;
 import dev.modmind.kunjinkao.network.QolStatePayload;
 import dev.modmind.kunjinkao.network.SwordDrawAnimationPayload;
@@ -85,8 +86,32 @@ public final class ClientPayloadHandlers {
             } else if (payload instanceof CosmeticStatePayload cosmetics) {
                 // 装饰（201–203）：整表快照，存进客户端镜像后由 CosmeticRenderer 用本地玩家位置画出来。
                 CosmeticClientState.accept(cosmetics.entries());
+            } else if (payload instanceof InjectionStatePayload injection) {
+                // 注入：只更新进度条的表现状态，成败判定全在服务端。
+                applyInjectionState(injection);
             }
         });
+    }
+
+    /** 注入进度：START 开条，ABORT 收条，DONE 收条并闪一下成功提示。 */
+    private static void applyInjectionState(InjectionStatePayload payload) {
+        switch (payload.state()) {
+            case InjectionStatePayload.START -> InjectionClientState.start(
+                    payload.durationTicks(), handFromOrdinal(payload.hand()));
+            case InjectionStatePayload.DONE -> InjectionClientState.complete();
+            case InjectionStatePayload.ABORT -> InjectionClientState.abort();
+            default -> {
+                // 认不出的状态：静默忽略，与本模组其它包的处理一致。
+            }
+        }
+    }
+
+    /** 手枚举按序号还原，越界回落到主手（与网络层的 readEnumSafe 同一套保守策略）。 */
+    private static net.minecraft.world.InteractionHand handFromOrdinal(int ordinal) {
+        net.minecraft.world.InteractionHand[] values = net.minecraft.world.InteractionHand.values();
+        return ordinal >= 0 && ordinal < values.length
+                ? values[ordinal]
+                : net.minecraft.world.InteractionHand.MAIN_HAND;
     }
 
     private static void handleAdminPasswordResult(boolean authorized) {

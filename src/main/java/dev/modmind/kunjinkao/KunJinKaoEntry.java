@@ -62,6 +62,9 @@ public final class KunJinKaoEntry {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.KunJinKaoTradeHandler());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.SwordMiningPenaltyHandler());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.SwordAreaFieldHandler());
+        // 注入（替代原「管理员剑」的获取方式）：两个处理器都是静态方法订阅，按 class 注册。
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.InjectionHandler.class);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.InjectedItemBehaviorHandler.class);
         // TODO(下一批): QolHandler / ColdDataEffectsHandler / ZoneSelection / StandFirm / Trade /
         //               SwordMiningPenalty / AutoSmelt 的事件钩子 / SwordAreaField —— 都等 ZoneExcavationJob
         // TODO(后续批次): WorldGateRegistry / 事件处理器 / 客户端

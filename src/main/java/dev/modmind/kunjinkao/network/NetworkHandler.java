@@ -31,8 +31,10 @@ public final class NetworkHandler {
      * 2 → 3：新增 PlacementSyncPayload（放置记录整表同步）。
      * 1 → 2：一次性补进 14 条 S2C 回执包（HUD 状态 / 实体列表 / 装饰 / 选区 / 加速场 / 建筑手杖预览…）。
      * 注册表从 1 条变成 15 条，旧端必须被握手挡下 —— 否则解码时会按错的判别 id 读错的类。
+     * 5 → 6：新增注入两条包（InjectionStartPayload C2S / InjectionStatePayload S2C），
+     * 与 1.21.1 侧 30 → 31 对应。
      */
-    public static final String PROTOCOL_VERSION = "5";
+    public static final String PROTOCOL_VERSION = "6";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(KunJinKaoEntry.MOD_ID, "main"),
@@ -209,6 +211,14 @@ public final class NetworkHandler {
         CHANNEL.messageBuilder(WandPreviewRequestPayload.class, nextMessageId++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(WandPreviewRequestPayload::encode).decoder(WandPreviewRequestPayload::decode)
                 .consumerMainThread(WandPreviewRequestPayload::handle).add();
+
+        // ===== 注入（替代原「管理员剑」的获取方式）=====
+        CHANNEL.messageBuilder(InjectionStartPayload.class, nextMessageId++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(InjectionStartPayload::encode).decoder(InjectionStartPayload::decode)
+                .consumerMainThread(InjectionStartPayload::handle).add();
+        CHANNEL.messageBuilder(InjectionStatePayload.class, nextMessageId++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(InjectionStatePayload::encode).decoder(InjectionStatePayload::decode)
+                .consumerMainThread(InjectionStatePayload::handle).add();
     }
 
     /** 统计已注册的消息数，供自检/日志用。 */

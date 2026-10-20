@@ -38,7 +38,7 @@ public record ToggleThemePayload(InteractionHand hand, int theme) {
                 return;
             }
             ItemStack stack = player.getItemInHand(payload.hand);
-            if (stack.getItem() instanceof KunJinKaoSwordItem) {
+            if (KunJinKaoSwordItem.isSwordLike(stack)) {
                 KunJinKaoSwordItem.setTheme(stack, payload.theme);
                 player.displayClientMessage(
                         Component.literal("§d异象主题：" + KunJinKaoTheme.displayName(KunJinKaoSwordItem.getTheme(stack))),

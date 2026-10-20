@@ -43,7 +43,7 @@ public final class SwordMiningPenaltyHandler {
         Player player = event.getEntity();
         // 凌空采掘（功能面板 83）：不开剑也能免掉处境惩罚。
         // 两个来源是"或"的关系 —— 手持本模组剑本来就是它的能力，83 只是把这个能力发给别的工具。
-        boolean holdsSword = player.getMainHandItem().getItem() instanceof KunJinKaoSwordItem;
+        boolean holdsSword = KunJinKaoSwordItem.isSwordLike(player.getMainHandItem());
         boolean flyMining = player instanceof ServerPlayer serverPlayer
                 && KunJinKaoQolHandler.isOn(serverPlayer, QolSetting.FLY_MINING);
         if (!holdsSword && !flyMining) {

@@ -502,7 +502,7 @@ public final class SwordOptionsScreen extends Screen {
     private void refreshAreaPageLabels() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (stack.getItem() instanceof KunJinKaoSwordItem) {
+        if (KunJinKaoSwordItem.isSwordLike(stack)) {
             if (areaModeButton != null) {
                 areaModeButton.setMessage(label("screen.kunjinkao.area_mode",
                         Component.translatable(switch (KunJinKaoSwordItem.getAreaMode(stack)) {
@@ -533,7 +533,7 @@ public final class SwordOptionsScreen extends Screen {
     private void refreshRecordsPageLabels() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (stack.getItem() instanceof KunJinKaoSwordItem) {
+        if (KunJinKaoSwordItem.isSwordLike(stack)) {
             if (areaModeButton != null) {
                 areaModeButton.setMessage(label("screen.kunjinkao.area_mode",
                         Component.translatable(switch (KunJinKaoSwordItem.getAreaMode(stack)) {
@@ -572,7 +572,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -677,7 +677,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -849,7 +849,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -867,7 +867,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -885,7 +885,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -902,7 +902,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleConstructionWand() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -917,7 +917,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleAngelCore() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -932,7 +932,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleDestructionCore() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -950,7 +950,7 @@ public final class SwordOptionsScreen extends Screen {
     private void togglePlacementUndo() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -972,7 +972,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleSilkTouch() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -996,7 +996,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleAutoSmelt() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1011,7 +1011,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleBrush() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1026,7 +1026,7 @@ public final class SwordOptionsScreen extends Screen {
     private void cycleToolMode() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1040,7 +1040,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleLightningRod() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1074,7 +1074,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleWrench() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1096,7 +1096,7 @@ public final class SwordOptionsScreen extends Screen {
     private void applyTimeAccelMode(int mode) {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1122,7 +1122,7 @@ public final class SwordOptionsScreen extends Screen {
     private void cycleTimeAccelMultiplier() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1137,7 +1137,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleBeheading() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1152,7 +1152,7 @@ public final class SwordOptionsScreen extends Screen {
     private void toggleSpawnEggDrop() {
         Player player = Minecraft.getInstance().player;
         ItemStack stack = player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1170,7 +1170,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1186,7 +1186,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1201,7 +1201,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1216,7 +1216,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }
@@ -1237,7 +1237,7 @@ public final class SwordOptionsScreen extends Screen {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             onClose();
             return;
         }

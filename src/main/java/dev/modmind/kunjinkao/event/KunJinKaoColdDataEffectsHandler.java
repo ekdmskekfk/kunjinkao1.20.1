@@ -57,7 +57,7 @@ public final class KunJinKaoColdDataEffectsHandler {
         }
 
         ItemStack sword = player.getMainHandItem();
-        if (!(sword.getItem() instanceof KunJinKaoSwordItem)
+        if (!(KunJinKaoSwordItem.isSwordLike(sword))
                 || KunJinKaoSwordItem.isDisguised(sword)) {
             return;
         }
@@ -427,6 +427,6 @@ public final class KunJinKaoColdDataEffectsHandler {
             return;
         }
         ItemStack stack = serverPlayer.getItemInHand(hand);
-        if (stack.getItem() instanceof KunJinKaoSwordItem) action.accept(stack);
+        if (KunJinKaoSwordItem.isSwordLike(stack)) action.accept(stack);
     }
 }

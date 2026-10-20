@@ -70,7 +70,7 @@ public final class SwordAreaFieldHandler {
             return;
         }
         ItemStack stack = player.getItemInHand(event.getHand());
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             return;
         }
         if (KunJinKaoSwordItem.isWrenchEnabled(stack)) {

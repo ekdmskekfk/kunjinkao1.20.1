@@ -24,7 +24,7 @@ public class KunJinKaoTooltipColorHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onItemTooltipLowest(ItemTooltipEvent event) {
-        if (!(event.getItemStack().getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(event.getItemStack()))) {
             return;
         }
         if (KunJinKaoSwordItem.isDisguised(event.getItemStack())) {

@@ -228,7 +228,7 @@ public class KunJinKaoProtectionHandler {
     private static boolean isAdminSword(ItemStack stack) {
         // isInert 同时排除"伪装中"与"未验证的合成成品"：后者是安全闸门，
         // 否则未授权玩家靠 Crafter 造出的 pending 剑在这一 tick 内仍能触发持剑免疫与覆写。
-        return stack.getItem() instanceof KunJinKaoSwordItem && !KunJinKaoSwordItem.isInert(stack);
+        return KunJinKaoSwordItem.isSwordLike(stack) && !KunJinKaoSwordItem.isInert(stack);
     }
 
     private static boolean isHoldingKunJinKaoSword(LivingEntity living) {
@@ -272,12 +272,12 @@ public class KunJinKaoProtectionHandler {
      */
     public static boolean hasSwordInInventory(Player player) {
         for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof KunJinKaoSwordItem && !KunJinKaoSwordItem.isDisguised(stack)) {
+            if (KunJinKaoSwordItem.isSwordLike(stack) && !KunJinKaoSwordItem.isDisguised(stack)) {
                 return true;
             }
         }
         for (ItemStack stack : player.getInventory().offhand) {
-            if (stack.getItem() instanceof KunJinKaoSwordItem && !KunJinKaoSwordItem.isDisguised(stack)) {
+            if (KunJinKaoSwordItem.isSwordLike(stack) && !KunJinKaoSwordItem.isDisguised(stack)) {
                 return true;
             }
         }

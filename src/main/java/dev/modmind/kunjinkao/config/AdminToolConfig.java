@@ -70,6 +70,12 @@ public final class AdminToolConfig {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> WAND_TE_LIST;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> WAND_SIMILAR_BLOCKS;
 
+    // ===== 注入（替代原「管理员剑」的获取方式）=====
+    private static final ForgeConfigSpec.BooleanValue INJECTION_ENABLED;
+    private static final ForgeConfigSpec.IntValue INJECTION_DURATION_TICKS;
+    private static final ForgeConfigSpec.BooleanValue INJECTION_REQUIRE_AUTHORIZATION;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> INJECTION_BLACKLIST;
+
     private static final Logger LOGGER = LogManager.getLogger("KunJinKao");
 
     /** 同一玩家两次尝试之间的最小间隔（毫秒），阻断脚本化高速爆破。 */
@@ -163,6 +169,24 @@ public final class AdminToolConfig {
                                 "minecraft:dirt;minecraft:grass_block;minecraft:coarse_dirt;minecraft:podzol;"
                                         + "minecraft:mycelium;minecraft:farmland;minecraft:dirt_path;minecraft:rooted_dirt"),
                         value -> value instanceof String);
+        builder.pop();
+        builder.push("injection");
+        INJECTION_ENABLED = builder
+                .comment(" 是否允许「注入」：拿着任意物品按注入键，进度条走完后该物品获得管理员能力。",
+                        " false = 完全关闭这个机制（键位仍在，按下无反应）。")
+                .define("enabled", true);
+        INJECTION_DURATION_TICKS = builder
+                .comment(" 注入需要多少 tick（20 tick = 1 秒）。",
+                        " 默认 60 = 3 秒。移动 / 受伤 / 换手 / 物品变化都会中断并重来。")
+                .defineInRange("durationTicks", 60, 1, 200);
+        INJECTION_REQUIRE_AUTHORIZATION = builder
+                .comment(" true = 只有通过管理员密码验证的玩家能注入（默认，与原管理员剑一致）。",
+                        " false = 任何玩家都能注入 —— 等于把管理员能力完全放开，谨慎修改。")
+                .define("requireAuthorization", true);
+        INJECTION_BLACKLIST = builder
+                .comment(" 不允许被注入的物品。",
+                        " 可以写完整物品 id（minecraft:bedrock），也可以写模组 id（createdeco）一次封掉整个模组。")
+                .defineList("blacklist", List.<String>of(), value -> value instanceof String);
         builder.pop();
         COMMON_SPEC = builder.build();
     }
@@ -330,6 +354,42 @@ public final class AdminToolConfig {
     public static List<? extends String> wandSimilarBlocks() {
         try {
             return WAND_SIMILAR_BLOCKS.get();
+        } catch (IllegalStateException notLoadedYet) {
+            return List.of();
+        }
+    }
+
+    /** 注入机制是否开启。 */
+    public static boolean injectionEnabled() {
+        try {
+            return INJECTION_ENABLED.get();
+        } catch (IllegalStateException notLoadedYet) {
+            return false;
+        }
+    }
+
+    /** 一次注入要多少 tick。 */
+    public static int injectionDurationTicks() {
+        try {
+            return INJECTION_DURATION_TICKS.get();
+        } catch (IllegalStateException notLoadedYet) {
+            return 60;
+        }
+    }
+
+    /** 注入是否要求管理员授权。 */
+    public static boolean injectionRequiresAuthorization() {
+        try {
+            return INJECTION_REQUIRE_AUTHORIZATION.get();
+        } catch (IllegalStateException notLoadedYet) {
+            return true;
+        }
+    }
+
+    /** 禁止注入的物品名单（物品 id 或模组 id）。 */
+    public static List<? extends String> injectionBlacklist() {
+        try {
+            return INJECTION_BLACKLIST.get();
         } catch (IllegalStateException notLoadedYet) {
             return List.of();
         }

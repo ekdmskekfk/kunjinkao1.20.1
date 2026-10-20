@@ -479,7 +479,7 @@ public final class SwordTimeAcceleration {
             return;
         }
         ItemStack stack = player.getItemInHand(event.getHand());
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             return;
         }
         // 扳手模式开着：整个让给模组，这里什么都不做。

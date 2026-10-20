@@ -1,0 +1,122 @@
+package dev.modmind.kunjinkao.event;
+
+import dev.modmind.kunjinkao.KunJinKaoSwordItem;
+import dev.modmind.kunjinkao.inject.InjectionData;
+import dev.modmind.kunjinkao.world.SwordTimeAcceleration;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+/**
+ * 让「被注入的任意物品」拥有原管理员剑的行为（1.20.1 Forge 版）。
+ *
+ * <p>原剑的行为写在物品类的 override 里（{@code use} / {@code useOn} /
+ * {@code onItemUseFirst} / {@code getDestroySpeed} / {@code isCorrectToolForDrops}）。
+ * 一个泥土方块不是那个类，原版永远不会调这些方法 —— 所以对注入物品改由本处理器在
+ * 事件里转调 {@code KunJinKaoSwordItem} 里抽出来的同名静态实现。</p>
+ *
+ * <p><b>不会重复执行</b>：{@link #applies} 明确排除了剑本体
+ * （{@code !(KunJinKaoSwordItem.isSwordLike(stack))}）。剑仍然走它自己的
+ * override，注入物品走这里，两条路互斥。</p>
+ *
+ * <p>与 1.21.1 版本的差别只在事件包名（{@code net.minecraftforge.event.*}）和
+ * 一个 {@code consumesAction()} 的用法 —— 逻辑一一对应。</p>
+ */
+public final class InjectedItemBehaviorHandler {
+
+    private InjectedItemBehaviorHandler() {
+    }
+
+    /** 只处理「注入过、且不是剑本体」的栈。 */
+    private static boolean applies(ItemStack stack) {
+        return InjectionData.isInjected(stack) && !(stack.getItem() instanceof KunJinKaoSwordItem);
+    }
+
+    // ===== 右键方块：onItemUseFirst + useOn =====
+
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        ItemStack stack = event.getItemStack();
+        if (!applies(stack)) {
+            return;
+        }
+        Player player = event.getEntity();
+        if (player == null) {
+            return;
+        }
+
+        // ---- 1) 潜行路径：原版在 useOn 之前会先调 onItemUseFirst ----
+        if (player.isShiftKeyDown() && !KunJinKaoSwordItem.isWrenchEnabled(stack)) {
+            if (KunJinKaoSwordItem.tryPlaceAreaField(player, event.getLevel(), event.getPos(), stack)) {
+                consume(event, InteractionResult.sidedSuccess(event.getLevel().isClientSide()));
+                return;
+            }
+            if (event.getLevel() instanceof ServerLevel serverLevel) {
+                SwordTimeAcceleration.tryToggleBlock(player, serverLevel, event.getPos(), stack);
+            }
+            consume(event, InteractionResult.sidedSuccess(event.getLevel().isClientSide()));
+            return;
+        }
+
+        // ---- 2) useOn：放置类核心 / 时间加速 / 刷子 / 锄头铲子 / 避雷针 ----
+        UseOnContext context = new UseOnContext(player, event.getHand(), event.getHitVec());
+        InteractionResult result = KunJinKaoSwordItem.useOnImpl(stack, context);
+        if (result != InteractionResult.PASS) {
+            consume(event, result);
+        }
+        // PASS：刻意不取消，原版会接着调 use()，由下面的 onRightClickItem 接住。
+    }
+
+    // ===== 右键（空气）：use =====
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        ItemStack stack = event.getItemStack();
+        if (!applies(stack)) {
+            return;
+        }
+        Player player = event.getEntity();
+        if (player == null) {
+            return;
+        }
+        InteractionResultHolder<ItemStack> result =
+                KunJinKaoSwordItem.useImpl(stack, player.level(), player, event.getHand());
+        if (result.getResult() != InteractionResult.PASS) {
+            event.setCancellationResult(result.getResult());
+            event.setCanceled(true);
+        }
+    }
+
+    private static void consume(PlayerInteractEvent.RightClickBlock event, InteractionResult result) {
+        event.setCancellationResult(result);
+        event.setCanceled(true);
+    }
+
+    // ===== 挖掘：getDestroySpeed / isCorrectToolForDrops =====
+
+    /** 挖掘速度。原剑的 {@code getDestroySpeed} 直接返回设置值（1..100），这里照搬。 */
+    @SubscribeEvent
+    public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
+        ItemStack stack = event.getEntity().getMainHandItem();
+        if (!applies(stack)) {
+            return;
+        }
+        event.setNewSpeed(KunJinKaoSwordItem.getMiningSpeed(stack));
+    }
+
+    /** 原剑的 {@code isCorrectToolForDrops} 恒为 true，这里等价地强制可掉落。 */
+    @SubscribeEvent
+    public static void onHarvestCheck(PlayerEvent.HarvestCheck event) {
+        ItemStack stack = event.getEntity().getMainHandItem();
+        if (!applies(stack)) {
+            return;
+        }
+        event.setCanHarvest(true);
+    }
+}

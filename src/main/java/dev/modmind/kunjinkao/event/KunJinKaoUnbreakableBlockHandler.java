@@ -34,7 +34,7 @@ public final class KunJinKaoUnbreakableBlockHandler {
         }
 
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))
                 || !KunJinKaoSwordItem.canBreakUnbreakableBlocks(stack)) {
             return;
         }

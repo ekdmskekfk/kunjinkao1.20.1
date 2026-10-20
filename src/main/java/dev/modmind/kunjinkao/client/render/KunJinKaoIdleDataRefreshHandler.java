@@ -49,7 +49,7 @@ public final class KunJinKaoIdleDataRefreshHandler {
         }
 
         ItemStack stack = player.getItemInHand(event.getHand());
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))
                 || KunJinKaoSwordItem.isDisguised(stack)) {
             return;
         }

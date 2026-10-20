@@ -45,7 +45,7 @@ public final class PlacementPreviewRenderer {
             return;
         }
         ItemStack sword = player.getMainHandItem();
-        if (!(sword.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(sword))) {
             return;
         }
         int areaMode = KunJinKaoSwordItem.getAreaMode(sword);

@@ -44,7 +44,7 @@ public final class KunJinKaoAutoSmeltHandler {
      * 免得"正常掉落是锭、倍数补发却是原矿"。
      */
     public static boolean isActive(ItemStack tool) {
-        return tool.getItem() instanceof KunJinKaoSwordItem
+        return KunJinKaoSwordItem.isSwordLike(tool)
                 && KunJinKaoSwordItem.isAutoSmeltEnabled(tool)
                 && !hasSilkTouch(tool);
     }

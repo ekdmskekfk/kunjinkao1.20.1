@@ -37,7 +37,7 @@ public record ToggleDisguisePayload(InteractionHand hand) {
                 return;
             }
             ItemStack stack = player.getItemInHand(payload.hand);
-            if (stack.getItem() instanceof KunJinKaoSwordItem) {
+            if (KunJinKaoSwordItem.isSwordLike(stack)) {
                 KunJinKaoSwordItem.toggleDisguise(stack);
             }
         });

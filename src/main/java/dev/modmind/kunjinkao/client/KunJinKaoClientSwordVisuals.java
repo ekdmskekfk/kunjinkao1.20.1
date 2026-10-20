@@ -372,7 +372,7 @@ public final class KunJinKaoClientSwordVisuals {
         ItemStack stack = compileHand == null
                 ? holder.getMainHandItem()
                 : holder.getItemInHand(compileHand);
-        return stack.getItem() instanceof KunJinKaoSwordItem ? stack : null;
+        return KunJinKaoSwordItem.isSwordLike(stack) ? stack : null;
     }
 
     /** 当前编译动画绑定的手；{@code RenderHandEvent} 用它保证一帧只画一次中央展示。 */
@@ -514,7 +514,7 @@ public final class KunJinKaoClientSwordVisuals {
     }
 
     private static boolean isVisibleSword(ItemStack stack) {
-        return stack.getItem() instanceof KunJinKaoSwordItem && !KunJinKaoSwordItem.isDisguised(stack);
+        return KunJinKaoSwordItem.isSwordLike(stack) && !KunJinKaoSwordItem.isDisguised(stack);
     }
 
     private static void emitCompileParticles(Player player, int ticksLeft) {

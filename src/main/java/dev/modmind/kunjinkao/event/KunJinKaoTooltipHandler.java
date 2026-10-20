@@ -23,7 +23,7 @@ public class KunJinKaoTooltipHandler {
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        if (!(stack.getItem() instanceof KunJinKaoSwordItem)) {
+        if (!(KunJinKaoSwordItem.isSwordLike(stack))) {
             return;
         }
         if (KunJinKaoSwordItem.isDisguised(stack)) {

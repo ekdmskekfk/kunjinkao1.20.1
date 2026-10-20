@@ -658,6 +658,23 @@ public class KunJinKaoSwordItem extends SwordItem {
      * 同刻丢回地上还能保住标记），期间 pending 剑是一把满配武器。
      * 惰性的剑在这里一律退化成普通剑行为（等同于伪装分支的处理）。
      */
+    /**
+     * 这个物品栈是否"算作管理员剑" —— 注入机制引入后的<b>统一判定入口</b>。
+     *
+     * <p>注入机制让能力可以挂在任意物品上，原来散落全库的
+     * {@code KunJinKaoSwordItem.isSwordLike(stack)} 全部改成调用这里，
+     * 于是「谁拥有管理员能力」只剩一个定义点。</p>
+     *
+     * <p>它<b>不</b>检查伪装/未完成合成（那是 {@link #isInert} 的事）。</p>
+     */
+    public static boolean isSwordLike(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return false;
+        }
+        return stack.getItem() instanceof KunJinKaoSwordItem
+                || dev.modmind.kunjinkao.inject.InjectionData.isInjected(stack);
+    }
+
     public static boolean isInert(ItemStack stack) {
         return isDisguised(stack) || AdminSwordRecipe.isPendingAdminSword(stack);
     }
@@ -730,9 +747,19 @@ public class KunJinKaoSwordItem extends SwordItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
+        return useImpl(player.getItemInHand(hand), level, player, hand);
+    }
+
+    /**
+     * {@link #use} 的实现本体，抽成静态方法供「被注入的任意物品」复用。
+     *
+     * <p>注入物品不是本类实例，原版永远不会调用它的 {@code use}，只能由
+     * {@code InjectedItemBehaviorHandler} 在交互事件里转调这里。逻辑只留一份。</p>
+     */
+    public static InteractionResultHolder<ItemStack> useImpl(ItemStack stack, Level level,
+                                                            Player player, InteractionHand hand) {
         if (isInert(stack)) {
-            return super.use(level, player, hand);
+            return InteractionResultHolder.pass(stack);
         }
         if (player.isShiftKeyDown()) {
             // 对着【上方】shift+右键：加速时间（整体拉高服务器每秒 tick 数）。
@@ -838,11 +865,18 @@ public class KunJinKaoSwordItem extends SwordItem {
      */
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        return useOnImpl(context.getItemInHand(), context);
+    }
+
+    /**
+     * {@link #useOn} 的实现本体，抽成静态方法的理由同 {@link #useImpl}。
+     * 物品栈改为显式参数：注入物品的调用方拿的就是同一个栈。
+     */
+    public static InteractionResult useOnImpl(ItemStack stack, UseOnContext context) {
         Player player = context.getPlayer();
-        ItemStack stack = context.getItemInHand();
         // 潜行时一律交回原版，只有一个例外：时间加速把 shift 当作触发键。
         if (player == null || isInert(stack)) {
-            return super.useOn(context);
+            return InteractionResult.PASS;
         }
         Level level = context.getLevel();
         BlockPos clickedPos = context.getClickedPos();
@@ -878,7 +912,7 @@ public class KunJinKaoSwordItem extends SwordItem {
             // 只要本模组消费了这次右键，它们就永远不会被触发；换个组合键也没用（模组认不出）。
             // 代价是开着扳手时无法加速机器，两种用途靠这个开关互斥切换。
             if (isWrenchEnabled(stack)) {
-                return super.useOn(context);
+                return InteractionResult.PASS;
             }
                 // 区域模式开着：shift+右键 立/撤区域场，这次不再走加速那条路。
                 if (tryPlaceAreaField(player, level, clickedPos, stack)) {
@@ -886,7 +920,7 @@ public class KunJinKaoSwordItem extends SwordItem {
                 }
             int accelMode = SwordTimeAcceleration.clampMode(getTimeAccelMode(stack));
             if (accelMode == SwordTimeAcceleration.MODE_OFF) {
-                return super.useOn(context);
+                return InteractionResult.PASS;
             }
             if (SwordTimeAcceleration.tryToggleBlock(player, level, clickedPos, stack)) {
                 return InteractionResult.sidedSuccess(level.isClientSide());
@@ -917,7 +951,7 @@ public class KunJinKaoSwordItem extends SwordItem {
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
-        return super.useOn(context);
+        return InteractionResult.PASS;
     }
 
     // ===== 刷子的长按机制（对齐原版 BrushItem）=====
