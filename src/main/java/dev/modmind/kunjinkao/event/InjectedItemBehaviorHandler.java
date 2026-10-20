@@ -98,6 +98,47 @@ public final class InjectedItemBehaviorHandler {
         event.setCanceled(true);
     }
 
+    // ===== 攻击：补上 hurtEnemy 的瞬杀路径 =====
+
+    /**
+     * 原剑的 {@code hurtEnemy} 在命中瞬间直接 {@code kill()} 目标（覆写开关关闭时），
+     * 对玩家目标则打处决标记后处决。{@code KunJinKaoProtectionHandler} 只负责"打标记 +
+     * 放行伤害"，真正的瞬杀写在物品 override 里 —— 注入物品拿不到那个 override，
+     * 所以必须在这里补一刀，否则注入物品只有面板攻击力、没有"砍中即秒杀"。
+     *
+     * <p>三处刻意跳过：伤害上限被调低（按普通伤害）、覆写开关打开（由
+     * {@code onLivingAttack} 启动覆写流程）、客户端（只做服务端权威结算）。</p>
+     */
+    @SubscribeEvent
+    public static void onAttack(net.minecraftforge.event.entity.player.AttackEntityEvent event) {
+        Player attacker = event.getEntity();
+        ItemStack stack = attacker.getMainHandItem();
+        if (!applies(stack)) {
+            return;
+        }
+        if (!(event.getTarget() instanceof net.minecraft.world.entity.LivingEntity target)) {
+            return;
+        }
+        if (KunJinKaoSwordItem.getAttackDamageLimit(stack)
+                < KunJinKaoSwordItem.MAX_ATTACK_DAMAGE_LIMIT) {
+            return;
+        }
+        if (attacker.level().isClientSide()) {
+            return;
+        }
+        if (target instanceof Player) {
+            KunJinKaoSwordItem.applyExecutionMark(target, stack);
+            KunJinKaoSwordItem.killIgnoringImmunity(target,
+                    KunJinKaoSwordItem.swordKillSource(attacker));
+            return;
+        }
+        if (KunJinKaoSwordItem.isOverwriteEnabled(stack)) {
+            return;
+        }
+        KunJinKaoSwordItem.applyKunJinKaoMark(target, stack);
+        KunJinKaoSwordItem.killIgnoringImmunity(target, KunJinKaoSwordItem.swordKillSource(attacker));
+    }
+
     // ===== 挖掘：getDestroySpeed / isCorrectToolForDrops =====
 
     /** 挖掘速度。原剑的 {@code getDestroySpeed} 直接返回设置值（1..100），这里照搬。 */
