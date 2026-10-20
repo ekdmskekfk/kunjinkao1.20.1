@@ -1,24 +1,27 @@
 # 移植手册：1.21.1 NeoForge → 1.20.1 Forge
 
 > 目标：把 `F:\mcmodli\tang\neoforge1.21.1` 全量移植到本工程。
-> 本文档记录**已验证的规律**，避免重复踩坑。最后更新：2026-10-18
+> 本文档记录**已验证的规律**，避免重复踩坑。最后更新：2026-10-19（移植完工，见 §19）
 
 ## 1. 状态
 
-**已移植并编译通过：23 个类**
+**移植已完工（2026-10-19），终态见 §19。** 下表是**历史批次计划**，保留以便追溯每一批做过什么。
 
 | 批次 | 内容 | 状态 |
 |---|---|---|
 | 1 | 13 个零依赖 COM 类（Theme/Palette/HudFunction/QolSetting/IPool…） | ✅ |
-| 2 | 3 个 SavedData + `AdminToolConfig`(416行) + `QolSettings` | ✅ |
-| A | `KunJinKaoEntry` + `SwordRegistry`(最小版) + `KunJinKaoEntities` + `KunJinKaoHandEntity` + `KunJinKaoSounds` | ✅ |
-| 3 | **剑**：`KunJinKaoSwordItem`(1092行，11 处 DataComponent→NBT) + 创意标签页 | 待做 |
-| 4 | `world`(12) + `block`(2) + `block.entity`(1) + `compat`(3, AE2) | 待做 |
-| 5 | `wand`(20) | 待做 |
-| 6 | `event`(26) + `network`(37) —— **必须一起做**，双向 26 处引用 | 待做 |
-| 7 | `client`(44) 渲染/HUD/GUI | 待做 |
-| 8 | mixin 基础设施（1.20.1 要 MixinGradle，NeoForge 是内置的） | 待做 |
-| 9 | 移植件 `cyou.rimuru.*`(115) + `data/` 按 1.20.1 格式改造 | 待做 |
+| 2 | 3 个 SavedData + `AdminToolConfig`(416 行) + `QolSettings` | ✅ |
+| A | `KunJinKaoEntry` + `SwordRegistry` + `KunJinKaoEntities` + `KunJinKaoHandEntity` + `KunJinKaoSounds` | ✅ |
+| 3 | **剑**：`KunJinKaoSwordItem`(1096 行，DataComponent→NBT) + 创意标签页 | ✅ |
+| 4 | `world` + `block` + `block.entity` + `compat`(AE2) | ✅ |
+| 5 | `wand`(20) 建筑/天使/破坏三系列 + 撤销 | ✅ |
+| 6 | `event`(26) + `network`（最终 33 条注册：S2C 20 / C2S 13，`PROTOCOL_VERSION=5`） | ✅ |
+| 7 | `client` 渲染/HUD/GUI —— 实际 **54/54** | ✅ |
+| 8 | mixin 基础设施 —— 最终 **3 个**（耐久 / 火焰免疫 / 暂停场） | ✅ |
+| 9 | ~~移植件 `cyou.rimuru.*`(115)~~ → 用户决定**不移植**，整包已删除 | ❌ 不做 |
+
+当前实测：**177 java / 241 class / 64 资源 / `neoforged` 残留 0 / `compileJava` BUILD SUCCESSFUL**。
+`cyou` 那 115 个文件的机械变换成果也已随 `.porting-staging\` 一并删除（见 §19）。
 
 ## 2. 构建
 
@@ -68,6 +71,11 @@ beforeSettings { s ->
     }
 }
 ```
+
+> **补充（2026-10-19，实测）**：上面那段 init 脚本**现在不需要了**。
+> 代理通了之后 `maven.minecraftforge.net` 能正常访问，插件 marker 直接从 forge maven 解析，
+> `settings.gradle` 里没有 `useModule`，构建命令也不传 `--init-script`，照样 `BUILD SUCCESSFUL`。
+> 下面这段只作为「换机器/网络不通时」的备选手段保留。
 
 ## 4. 查 1.20.1 真实 API 的手段（**本次最有价值的发现**）
 
