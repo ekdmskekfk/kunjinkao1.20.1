@@ -321,6 +321,10 @@ public class KunJinKaoClientEvents {
                 || minecraft.screen != null) {
             return;
         }
+        if (!AdminAuthClientState.isAuthorized()) {
+            deniedAdminPassword(minecraft);
+            return;
+        }
         InteractionHand hand = findSwordHand(minecraft.player);
         if (hand != null) {
             minecraft.setScreen(new SwordOptionsScreen(hand));
@@ -340,7 +344,25 @@ public class KunJinKaoClientEvents {
                 || minecraft.screen != null) {
             return;
         }
+        if (!AdminAuthClientState.isAuthorized()) {
+            deniedAdminPassword(minecraft);
+            return;
+        }
         minecraft.setScreen(new QolControlScreen());
+    }
+
+    /**
+     * 控制台被权限挡下时的统一提示。
+     *
+     * <p>只提示、不弹密码框：密码面板的入口固定在 {@code ]}，
+     * 在这里自动弹会让"按错键"变成"被塞了一个输入框"，反而更烦。</p>
+     */
+    public static void deniedAdminPassword(Minecraft minecraft) {
+        if (minecraft.player != null) {
+            minecraft.player.displayClientMessage(
+                    net.minecraft.network.chat.Component.translatable("message.kunjinkao.console_locked"),
+                    true);
+        }
     }
 
     /**

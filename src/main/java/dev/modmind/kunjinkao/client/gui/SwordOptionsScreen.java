@@ -308,9 +308,16 @@ public final class SwordOptionsScreen extends Screen {
         // 而不是只在设置页出现 —— 在放置记录页想顺手开一下面板是常事。
         int entryW = 72;
         Button openQol = addButton(navX - 4 - entryW, navY, entryW, () -> {
-            if (this.minecraft != null) {
-                this.minecraft.setScreen(new QolControlScreen());
+            if (this.minecraft == null) {
+                return;
             }
+            // 与 G 键同一条闸：授权可能被 /kunjinkao-admin revoke 中途撤销，
+            // 不能因为"现在在剑设置里"就默认放行。
+            if (!dev.modmind.kunjinkao.client.AdminAuthClientState.isAuthorized()) {
+                dev.modmind.kunjinkao.client.KunJinKaoClientEvents.deniedAdminPassword(this.minecraft);
+                return;
+            }
+            this.minecraft.setScreen(new QolControlScreen());
         });
         openQol.setMessage(Component.translatable("screen.kunjinkao.qol.open_from_sword"));
     }

@@ -304,6 +304,7 @@
   "screen.kunjinkao.section_area": "区域",
   "screen.kunjinkao.open_records": "放置记录",
   "screen.kunjinkao.records_back": "返回",
+  "message.kunjinkao.console_locked": "§c需要管理员密码验证后才能打开（按 §e] §c输入密码）",
   "key.kunjinkao.inject": "注入",
   "lore.kunjinkao.injected": "这个物品好像有些不一样",
   "hud.kunjinkao.injection_title": "注入中",

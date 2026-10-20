@@ -304,6 +304,7 @@
   "screen.kunjinkao.section_area": "Area",
   "screen.kunjinkao.open_records": "Placements",
   "screen.kunjinkao.records_back": "Back",
+  "message.kunjinkao.console_locked": "§cAdmin password required (press §e] §cto unlock)",
   "key.kunjinkao.inject": "Inject",
   "lore.kunjinkao.injected": "This item seems... different.",
   "hud.kunjinkao.injection_title": "Injecting",

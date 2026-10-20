@@ -162,6 +162,8 @@ public class ClientModEvents {
             CosmeticClientState.clear();
             // 注入进度条：断线时不清会留一条永远走不完的进度在屏幕中间。
             InjectionClientState.reset();
+            // 管理员授权镜像：不清的话退到主菜单再进别的服务器，控制台会保持上一局的解锁状态。
+            AdminAuthClientState.reset();
         }
     }
 }

@@ -68,6 +68,11 @@ public final class ClientPayloadHandlers {
                 WandPreviewRenderer.accept(preview.seq(), preview.positions());
             } else if (payload instanceof AdminEyeStatePayload eye) {
                 AdminEyeVisualState.setEnabled(eye.playerUuid(), eye.enabled());
+                // 顺带把它当作「我自己是否已授权」的权威镜像：登录时服务端会广播自己的那一条。
+                Minecraft minecraft = Minecraft.getInstance();
+                if (minecraft.player != null && minecraft.player.getUUID().equals(eye.playerUuid())) {
+                    AdminAuthClientState.setAuthorized(eye.enabled());
+                }
             } else if (payload instanceof SwordDrawAnimationPayload animation) {
                 RemoteSwordDrawVisualState.trigger(animation.playerUuid(), animation.hand());
             } else if (payload instanceof ExcludedPlayersPayload list) {
@@ -116,6 +121,8 @@ public final class ClientPayloadHandlers {
 
     private static void handleAdminPasswordResult(boolean authorized) {
         Minecraft minecraft = Minecraft.getInstance();
+        // 中途验证成功/失败都要立刻更新：成功后应当马上能开控制台，不必重登。
+        AdminAuthClientState.setAuthorized(authorized);
         if (minecraft.screen instanceof AdminPasswordScreen) {
             minecraft.setScreen(null);
         }
