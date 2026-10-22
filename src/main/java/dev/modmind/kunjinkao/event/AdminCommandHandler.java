@@ -90,6 +90,10 @@ public final class AdminCommandHandler {
             // 本模组的设计是"持剑即权限"：只撤销存档里的 UUID 不够，
             // 必须同时把剑收回，否则被撤销者仍保有秒杀、覆写与千倍掉落等全部能力。
             int stripped = stripAdminSwords(target);
+            // 同时把授权状态推给所有客户端：控制台的客户端镜像（AdminAuthClientState）
+            // 就是以这条包为准。不推的话，被撤销的人会继续能打开控制台。
+            dev.modmind.kunjinkao.network.NetworkHandler.sendToAll(
+                    new dev.modmind.kunjinkao.network.AdminEyeStatePayload(target.getUUID(), false));
             source.sendSuccess(() -> Component.literal(
                     "[Kunjinkao] 已撤销 " + target.getName().getString() + " 的管理员身份"
                             + (stripped > 0 ? "，并收回 " + stripped + " 把管理员剑" : "")), true);
