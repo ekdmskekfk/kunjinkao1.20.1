@@ -17,9 +17,11 @@ import net.minecraftforge.registries.DeferredRegister;
  * 本模组自己的实体注册。
  * <p>
  * 目前只有一个：{@code kunjinkao:hand} —— 一只贴地蠕动的手（见 {@link KunJinKaoHandEntity}）。
- * 它<b>不参与自然生成</b>：没有注册 spawn placement、没有生物群系修饰符，
- * 所以只能靠刷怪蛋或 {@code /summon} 出现。理由是这东西的定位是"管理员能放出来的东西"，
- * 而不是往世界里塞一种新怪物 —— 那会改变普通玩家的体验，不该由一个管理员工具模组来决定。
+ * <p>
+ * <b>自然生成</b>：由 {@link #onSpawnPlacements} 提供落点规则（站在动物可生成的方块上、
+ * 亮度足够），并由 {@code data/kunjinkao/forge/biome_modifier/add_hand_spawns.json}
+ * 注入到全部主世界生物群系。分类保持 CREATURE，所以按"动物"那一套规则生成，
+ * 也不受"离玩家太远就清除"的影响。
  */
 public final class KunJinKaoEntities {
 
@@ -61,6 +63,27 @@ public final class KunJinKaoEntities {
         // 属性挂在 mod 总线上：EntityAttributeCreationEvent 是注册期事件，
         // 晚于它再 put 就不会生效了（实体一生成就会因为拿不到属性表而崩）。
         modEventBus.addListener(KunJinKaoEntities::onAttributes);
+        // 自然生成的落点规则。生物群系一侧由 data/kunjinkao/forge/biome_modifier 的
+        // add_hand_spawns.json 注入，两者缺一不可。
+        modEventBus.addListener(KunJinKaoEntities::onSpawnPlacements);
+    }
+
+    /**
+     * 君君的落点规则：站在"动物可生成"的方块上，且光照足够亮。
+     *
+     * <p>照搬原版动物的判据（草/泥土类方块 + 亮度 > 8）：它是 CREATURE 分类，
+     * 用动物那一套才不会在洞里、水底、岩浆边上冒出来。
+     * 用 {@code MOTION_BLOCKING_NO_LEAVES} 而不是 {@code WORLD_SURFACE}：
+     * 后者会把树叶也算成地面，导致它生成在树冠上。</p>
+     */
+    private static void onSpawnPlacements(net.minecraftforge.event.entity.SpawnPlacementRegisterEvent event) {
+        event.register(HAND.get(),
+                net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND,
+                net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) ->
+                        level.getBlockState(pos.below()).is(net.minecraft.tags.BlockTags.ANIMALS_SPAWNABLE_ON)
+                                && level.getRawBrightness(pos, 0) > 8,
+                net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
 
     private static void onAttributes(EntityAttributeCreationEvent event) {
