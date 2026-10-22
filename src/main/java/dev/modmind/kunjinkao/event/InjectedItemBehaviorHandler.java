@@ -141,8 +141,14 @@ public final class InjectedItemBehaviorHandler {
 
     // ===== 挖掘：getDestroySpeed / isCorrectToolForDrops =====
 
-    /** 挖掘速度。原剑的 {@code getDestroySpeed} 直接返回设置值（1..100），这里照搬。 */
-    @SubscribeEvent
+    /**
+     * 挖掘速度。原剑的 {@code getDestroySpeed} 直接返回设置值（1..100），这里照搬。
+     *
+     * <p><b>必须是 HIGHEST</b>：{@code SwordMiningPenaltyHandler} 也监听这个事件，
+     * 它是乘法修正（水下除以潜水速度、空中 ×5）。我这里是"设基础值"，
+     * 排在它后面就会把它的结果整个覆盖 —— 注入物品的凌空采掘/水下挖掘会静默失效。</p>
+     */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         ItemStack stack = event.getEntity().getMainHandItem();
         if (!applies(stack)) {
