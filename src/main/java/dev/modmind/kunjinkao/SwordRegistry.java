@@ -34,6 +34,13 @@ public class SwordRegistry {
     public static final RegistryObject<Item> KUN_JIN_KAO_SWORD = ITEMS.register("kun_jin_kao",
             () -> new KunJinKaoSwordItem(Tiers.DIAMOND, new Item.Properties()));
 
+    /**
+     * 拟态刷：注入物品开启刷子功能时换成的物品。继承原版 BrushItem，
+     * 所以刷取行为与动画完全是原版的；刻意不放进创造模式物品栏。
+     */
+    public static final RegistryObject<Item> MIMIC_BRUSH = ITEMS.register("mimic_brush",
+            () -> new dev.modmind.kunjinkao.inject.MimicBrushItem(new Item.Properties()));
+
     public static final RegistryObject<RecipeSerializer<AdminSwordRecipe>> ADMIN_SWORD_RECIPE =
             RECIPE_SERIALIZERS.register("admin_sword", () -> AdminSwordRecipe.SERIALIZER);
 

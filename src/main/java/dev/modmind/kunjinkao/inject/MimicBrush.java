@@ -28,9 +28,6 @@ import net.minecraft.world.item.Items;
  */
 public final class MimicBrush {
 
-    /** 原版刷子模型里 {@code custom_model_data} 的判别值，与 brush.json 的 overrides 对应。 */
-    public static final int MODEL_DATA = 20251;
-
     /** 记原始物品 id（还原时用）。 */
     public static final String ORIGINAL_ID_KEY = "KunjinKaoMimicOriginalId";
     /** 记原始自定义名称的 JSON（原本没改名就不写）。 */
@@ -41,7 +38,7 @@ public final class MimicBrush {
 
     /** 是不是我们造出来的拟态刷。 */
     public static boolean isMimic(ItemStack stack) {
-        if (stack == null || stack.isEmpty() || !stack.is(Items.BRUSH)) {
+        if (stack == null || stack.isEmpty() || !stack.is(dev.modmind.kunjinkao.SwordRegistry.MIMIC_BRUSH.get())) {
             return false;
         }
         CompoundTag tag = stack.getTag();
@@ -82,9 +79,9 @@ public final class MimicBrush {
             tag.putString(ORIGINAL_NAME_KEY, Component.Serializer.toJson(stack.getHoverName()));
         }
         // 刷子模型要靠这个整数切到我们自己的模型。
-        tag.putInt("CustomModelData", MODEL_DATA);
+        // 模型由物品自己的模型文件决定，不再需要 CustomModelData。
 
-        ItemStack mimic = new ItemStack(Items.BRUSH);
+        ItemStack mimic = new ItemStack(dev.modmind.kunjinkao.SwordRegistry.MIMIC_BRUSH.get());
         mimic.setTag(tag);
         mimic.setHoverName(Component.translatable("item.kunjinkao.mimic_brush"));
         // 新栈没有原物品的注释/属性/无法破坏，重新落一遍（幂等）。
@@ -104,7 +101,7 @@ public final class MimicBrush {
         String nameJson = tag.contains(ORIGINAL_NAME_KEY) ? tag.getString(ORIGINAL_NAME_KEY) : null;
         tag.remove(ORIGINAL_ID_KEY);
         tag.remove(ORIGINAL_NAME_KEY);
-        tag.remove("CustomModelData");
+
 
         ResourceLocation key = ResourceLocation.tryParse(id);
         Item item = key == null ? Items.DIRT : BuiltInRegistries.ITEM.get(key);
