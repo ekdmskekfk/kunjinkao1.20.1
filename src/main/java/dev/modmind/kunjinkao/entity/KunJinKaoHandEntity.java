@@ -15,7 +15,16 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.EnumSet;
 
 /**
  * 君君：一只贴地蠕动的手（原名"锟斤拷之手"）。
@@ -61,6 +70,10 @@ public class KunJinKaoHandEntity extends PathfinderMob {
         this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        // 喷尿：站在中距离朝目标滋一泡。
+        this.goalSelector.addGoal(1, new SprayUrineGoal(this));
+        // 现在会主动找人（MobCategory 已改成 MONSTER）。
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
         // 没有 targetSelector 的 goal：它谁也不恨，谁也不打。
     }
 
@@ -110,6 +123,76 @@ public class KunJinKaoHandEntity extends PathfinderMob {
     }
 
     /** 让模型知道"现在该蠕动得多用力"：移动时用走路的摆幅，站着时留一点轻微蠕动。 */
+    // ===== 喷尿攻击 =====
+
+    /** 朝目标滋一泡尿：沿视线撒土黄色粒子，命中则施加「骚臭」。 */
+    public void sprayAt(LivingEntity target) {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        Vec3 from = this.position().add(0.0D, 0.35D, 0.0D);
+        Vec3 to = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
+        Vec3 delta = to.subtract(from);
+        int steps = (int) Math.max(4.0D, delta.length() * 4.0D);
+        for (int i = 0; i <= steps; i++) {
+            Vec3 point = from.add(delta.scale(i / (double) steps));
+            serverLevel.sendParticles(ParticleTypes.FALLING_HONEY,
+                    point.x, point.y, point.z, 1, 0.02D, 0.02D, 0.02D, 0.0D);
+        }
+        serverLevel.playSound(null, this.blockPosition(), SoundEvents.SLIME_SQUISH,
+                SoundSource.HOSTILE, 1.0F, 1.2F);
+        if (this.hasLineOfSight(target)) {
+            target.addEffect(new MobEffectInstance(KunJinKaoEffects.STENCH.get(),
+                    StenchEffect.DURATION_TICKS), this);
+        }
+    }
+
+    /** 喷尿的 goal：每 3 秒滋一次。 */
+    static final class SprayUrineGoal extends Goal {
+
+        private static final int COOLDOWN_TICKS = 60;
+        private static final double RANGE_SQR = 10.0D * 10.0D;
+
+        private final KunJinKaoHandEntity hand;
+        private int cooldown;
+
+        SprayUrineGoal(KunJinKaoHandEntity hand) {
+            this.hand = hand;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            LivingEntity target = this.hand.getTarget();
+            return target != null && target.isAlive()
+                    && this.hand.distanceToSqr(target) <= RANGE_SQR;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return canUse();
+        }
+
+        @Override
+        public void start() {
+            this.cooldown = 20;
+        }
+
+        @Override
+        public void tick() {
+            LivingEntity target = this.hand.getTarget();
+            if (target == null) {
+                return;
+            }
+            this.hand.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            if (this.cooldown > 0) {
+                this.cooldown--;
+                return;
+            }
+            this.cooldown = COOLDOWN_TICKS;
+            this.hand.sprayAt(target);
+        }
+    }
     public float squirmAmplitude(float limbSwingAmount) {
         return 0.25F + 0.75F * Math.min(1.0F, limbSwingAmount);
     }

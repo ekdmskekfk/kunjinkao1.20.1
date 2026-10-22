@@ -41,6 +41,13 @@ public class SwordRegistry {
     public static final RegistryObject<Item> MIMIC_BRUSH = ITEMS.register("mimic_brush",
             () -> new dev.modmind.kunjinkao.inject.MimicBrushItem(new Item.Properties()));
 
+    /** 尿液瓶：拿玻璃瓶右键君君获得，用于「双君仪式」。 */
+    public static final RegistryObject<Item> URINE_BOTTLE = ITEMS.register("urine_bottle",
+            () -> new Item(new Item.Properties()));
+
+    /** 除臭剂：右键使用解除自己身上的「骚臭」。 */
+    public static final RegistryObject<Item> DEODORANT = ITEMS.register("deodorant",
+            () -> new dev.modmind.kunjinkao.item.DeodorantItem(new Item.Properties()));
     public static final RegistryObject<RecipeSerializer<AdminSwordRecipe>> ADMIN_SWORD_RECIPE =
             RECIPE_SERIALIZERS.register("admin_sword", () -> AdminSwordRecipe.SERIALIZER);
 
@@ -55,6 +62,8 @@ public class SwordRegistry {
                         // 锟斤拷之手的刷怪蛋（实体在 KunJinKaoEntities 注册；引用写在 lambda 里，
                         // 不参与本类的静态初始化，所以没有初始化顺序问题）。
                         output.accept(dev.modmind.kunjinkao.entity.KunJinKaoEntities.HAND_SPAWN_EGG.get());
+                        output.accept(URINE_BOTTLE.get());
+                        output.accept(DEODORANT.get());
                     })
                     .build());
 

@@ -22,6 +22,8 @@ public final class KunJinKaoEntry {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         SwordRegistry.register(modEventBus);
         KunJinKaoEntities.register(modEventBus);
+        // 状态效果（骚臭）。
+        dev.modmind.kunjinkao.entity.KunJinKaoEffects.register(modEventBus);
         KunJinKaoSounds.register(modEventBus);
         AcceleratorRegistry.register(modEventBus);
         WorldGateRegistry.register(modEventBus);
@@ -65,6 +67,9 @@ public final class KunJinKaoEntry {
         // 注入（替代原「管理员剑」的获取方式）：两个处理器都是静态方法订阅，按 class 注册。
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.InjectionHandler.class);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.InjectedItemBehaviorHandler.class);
+        // 骚臭：挤尿、双君仪式、每 tick 逻辑。
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.StenchInteractionHandler.class);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.StenchTickHandler.class);
         // TODO(下一批): QolHandler / ColdDataEffectsHandler / ZoneSelection / StandFirm / Trade /
         //               SwordMiningPenalty / AutoSmelt 的事件钩子 / SwordAreaField —— 都等 ZoneExcavationJob
         // TODO(后续批次): WorldGateRegistry / 事件处理器 / 客户端
