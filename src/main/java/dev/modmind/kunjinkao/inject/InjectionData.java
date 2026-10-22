@@ -117,7 +117,12 @@ public final class InjectionData {
     }
 
     private static void appendLore(ItemStack stack) {
-        String json = loreJson();
+        appendLoreLine(stack, LORE_LINE);
+    }
+
+    /** 追加任意一行注释（拟态刷的专属简介也走这里）。已有同样文案就不重复加。 */
+    public static void appendLoreLine(ItemStack stack, Component line) {
+        String json = Component.Serializer.toJson(line);
         CompoundTag display = stack.getOrCreateTagElement("display");
         ListTag lore = display.getList("Lore", Tag.TAG_STRING);
         for (int i = 0; i < lore.size(); i++) {
@@ -130,6 +135,11 @@ public final class InjectionData {
     }
 
     private static void removeLore(ItemStack stack) {
+        removeLoreLine(stack, LORE_LINE);
+    }
+
+    /** 去掉指定的那一行注释；其它注释保持原样、原顺序。 */
+    public static void removeLoreLine(ItemStack stack, Component target) {
         CompoundTag tag = stack.getTag();
         if (tag == null || !tag.contains("display", Tag.TAG_COMPOUND)) {
             return;
@@ -138,7 +148,7 @@ public final class InjectionData {
         if (!display.contains("Lore", Tag.TAG_LIST)) {
             return;
         }
-        String json = loreJson();
+        String json = Component.Serializer.toJson(target);
         ListTag lore = display.getList("Lore", Tag.TAG_STRING);
         ListTag kept = new ListTag();
         boolean removed = false;
