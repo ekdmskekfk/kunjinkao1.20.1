@@ -15,6 +15,7 @@ import dev.modmind.kunjinkao.block.entity.AcceleratorBlockEntity;
 import dev.modmind.kunjinkao.world.SwordTimeAcceleration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -603,6 +604,108 @@ public final class SwordOptionsScreen extends Screen {
         return boxTop + BOX_PAD;
     }
 
+    // ===== 双击滑条精确输入 =====
+
+    /**
+     * 滑条"可精确设值"的最小契约。
+     *
+     * <p>四个滑条各自维护自己的整数值（{@code currentSpeed} 等）并各自夹紧范围，
+     * 所以这里不抽公共基类，只要求它们暴露三件事：当前值、范围、以及"按整数设值"。
+     * 这样双击输入框不需要知道每个滑条内部是怎么换算的。</p>
+     */
+    private interface IntSlider {
+        int sliderValue();
+
+        int sliderMin();
+
+        int sliderMax();
+
+        /** 精确设值：实现方负责夹紧到合法范围并触发原有回调。 */
+        void sliderSet(int value);
+    }
+
+    /** 双击后弹出的精确输入框；null 表示当前没在输入。 */
+    private EditBox sliderInput;
+    private IntSlider sliderInputTarget;
+    /** 上一次点中的滑条与时间，用于判定双击。 */
+    private AbstractSliderButton lastClickedSlider;
+    private long lastSliderClickMillis;
+
+    /** 双击间隔上限（毫秒）。 */
+    private static final long DOUBLE_CLICK_MS = 400L;
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 输入框开着时点别处就收起，避免它一直挂在界面上
+        if (sliderInput != null && !sliderInput.isMouseOver(mouseX, mouseY)) {
+            closeSliderInput();
+        }
+        if (button == 0 && sliderInput == null) {
+            AbstractSliderButton[] sliders = {
+                    miningSpeedSlider, oreDropMultiplierSlider, lootingLevelSlider, attackDamageSlider};
+            for (AbstractSliderButton slider : sliders) {
+                if (slider == null || !slider.isMouseOver(mouseX, mouseY)) {
+                    continue;
+                }
+                long now = net.minecraft.Util.getMillis();
+                if (slider == lastClickedSlider && now - lastSliderClickMillis <= DOUBLE_CLICK_MS) {
+                    lastClickedSlider = null;
+                    openSliderInput(slider);
+                    return true;
+                }
+                lastClickedSlider = slider;
+                lastSliderClickMillis = now;
+                break;
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    /** 在滑条原位置弹一个输入框，预填当前值。 */
+    private void openSliderInput(AbstractSliderButton slider) {
+        if (!(slider instanceof IntSlider target)) {
+            return;
+        }
+        closeSliderInput();
+        sliderInputTarget = target;
+        sliderInput = new EditBox(font, slider.getX(), slider.getY(), slider.getWidth(), slider.getHeight(),
+                Component.translatable("screen.kunjinkao.slider_input"));
+        sliderInput.setMaxLength(7);
+        sliderInput.setValue(Integer.toString(target.sliderValue()));
+        sliderInput.setTooltip(net.minecraft.client.gui.components.Tooltip.create(
+                Component.translatable("screen.kunjinkao.slider_input_hint",
+                        Integer.toString(target.sliderMin()), Integer.toString(target.sliderMax()))));
+        addRenderableWidget(sliderInput);
+        setFocused(sliderInput);
+        sliderInput.setFocused(true);
+        sliderInput.setCursorPosition(sliderInput.getValue().length());
+        sliderInput.setHighlightPos(sliderInput.getValue().length());
+    }
+
+    private void closeSliderInput() {
+        if (sliderInput != null) {
+            removeWidget(sliderInput);
+            sliderInput = null;
+        }
+        sliderInputTarget = null;
+    }
+
+    /** 回车：解析并应用；解析失败就静默收起（不弹错，避免打断操作）。 */
+    private void applySliderInput() {
+        if (sliderInput == null || sliderInputTarget == null) {
+            closeSliderInput();
+            return;
+        }
+        String text = sliderInput.getValue().trim();
+        if (!text.isEmpty()) {
+            try {
+                sliderInputTarget.sliderSet(Integer.parseInt(text));
+            } catch (NumberFormatException ignored) {
+                // 非数字：当作放弃输入
+            }
+        }
+        closeSliderInput();
+    }
     private Button addButton(int x, int y, int w, Runnable action) {
         return addRenderableWidget(Button.builder(Component.empty(), b -> action.run())
                 .bounds(x, y, w, BTN_H)
@@ -1319,7 +1422,30 @@ public final class SwordOptionsScreen extends Screen {
 
     // ===== 三个滑条（逻辑未变，只把文字改成「名称：值」）=====
 
-    private static final class MiningSpeedSlider extends AbstractSliderButton {
+    private static final class MiningSpeedSlider extends AbstractSliderButton implements IntSlider {
+
+        @Override
+        public int sliderValue() {
+            return currentSpeed;
+        }
+
+        @Override
+        public int sliderMin() {
+            return KunJinKaoSwordItem.MIN_MINING_SPEED;
+        }
+
+        @Override
+        public int sliderMax() {
+            return KunJinKaoSwordItem.MAX_MINING_SPEED;
+        }
+
+        @Override
+        public void sliderSet(int value) {
+            this.value = toSliderValue(value);
+            applyValue();
+        }
+
+
 
         private final IntConsumer onSpeedChanged;
         private int currentSpeed;
@@ -1359,7 +1485,30 @@ public final class SwordOptionsScreen extends Screen {
         }
     }
 
-    private static final class OreDropMultiplierSlider extends AbstractSliderButton {
+    private static final class OreDropMultiplierSlider extends AbstractSliderButton implements IntSlider {
+
+        @Override
+        public int sliderValue() {
+            return currentMultiplier;
+        }
+
+        @Override
+        public int sliderMin() {
+            return KunJinKaoSwordItem.MIN_ORE_DROP_MULTIPLIER;
+        }
+
+        @Override
+        public int sliderMax() {
+            return KunJinKaoSwordItem.MAX_ORE_DROP_MULTIPLIER;
+        }
+
+        @Override
+        public void sliderSet(int value) {
+            this.value = toSliderValue(value);
+            applyValue();
+        }
+
+
 
         private final IntConsumer onMultiplierChanged;
         private int currentMultiplier;
@@ -1410,7 +1559,31 @@ public final class SwordOptionsScreen extends Screen {
      * 与挖矿倍数滑条"1 = 无加成"是同一套读法，两个滑条并排放在一起才不会一个 1 是关、
      * 另一个 1 是满级。
      */
-    private static final class LootingLevelSlider extends AbstractSliderButton {
+    private static final class LootingLevelSlider extends AbstractSliderButton implements IntSlider {
+
+        /** 对外暴露的是"增强等级"（设置值 - 1），与滑条上显示的数字一致。 */
+        @Override
+        public int sliderValue() {
+            return currentSetting - KunJinKaoSwordItem.MIN_LOOTING_LEVEL;
+        }
+
+        @Override
+        public int sliderMin() {
+            return 0;
+        }
+
+        @Override
+        public int sliderMax() {
+            return KunJinKaoSwordItem.MAX_LOOTING_LEVEL - KunJinKaoSwordItem.MIN_LOOTING_LEVEL;
+        }
+
+        @Override
+        public void sliderSet(int value) {
+            this.value = toSliderValue(value + KunJinKaoSwordItem.MIN_LOOTING_LEVEL);
+            applyValue();
+        }
+
+
 
         private final IntConsumer onLevelChanged;
         private int currentSetting;
@@ -1454,7 +1627,30 @@ public final class SwordOptionsScreen extends Screen {
         }
     }
 
-    private static final class AttackDamageSlider extends AbstractSliderButton {
+    private static final class AttackDamageSlider extends AbstractSliderButton implements IntSlider {
+
+        @Override
+        public int sliderValue() {
+            return currentDamage;
+        }
+
+        @Override
+        public int sliderMin() {
+            return 0;
+        }
+
+        @Override
+        public int sliderMax() {
+            return KunJinKaoSwordItem.MAX_ATTACK_DAMAGE_LIMIT;
+        }
+
+        @Override
+        public void sliderSet(int value) {
+            this.value = Math.max(0.0D, Math.min(1.0D,
+                    value / (double) KunJinKaoSwordItem.MAX_ATTACK_DAMAGE_LIMIT));
+            applyValue();
+        }
+
         private final IntConsumer onDamageChanged;
         private int currentDamage;
 
