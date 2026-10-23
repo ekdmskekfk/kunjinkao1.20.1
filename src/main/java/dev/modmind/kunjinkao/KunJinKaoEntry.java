@@ -19,6 +19,7 @@ public final class KunJinKaoEntry {
     public static final String MOD_ID = "kunjinkao";
 
     public KunJinKaoEntry() {
+        System.out.println("[KunjinKao] BUILD=ore-mixin-1");
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         SwordRegistry.register(modEventBus);
         KunJinKaoEntities.register(modEventBus);

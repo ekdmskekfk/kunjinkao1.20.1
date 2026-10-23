@@ -82,6 +82,7 @@ public final class KunJinKaoOreDropHandler {
         // 1.20.1 上 BreakEvent 路径不可靠（方块尚未移除、execute 又是立即执行），
         // 改由 BlockPlayerDestroyMixin 在 playerDestroy 之后接管，这里不再补发。
         for (ItemStack baseDrop : baseDrops) {
+            spawnExtraStacks(level, pos, baseDrop, multiplier - 1);
         }
     }
 
