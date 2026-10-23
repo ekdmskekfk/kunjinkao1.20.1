@@ -24,8 +24,15 @@ import java.util.regex.Pattern;
  */
 public final class KunJinKaoOreDropHandler {
 
+    /** 临时诊断日志：定位"倍率不生效"卡在哪个分支，定位完删除。 */
+    private static final org.apache.logging.log4j.Logger LOGGER =
+            org.apache.logging.log4j.LogManager.getLogger("KunjinKaoOreDropDiag");
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockEvent.BreakEvent event) {
+        LOGGER.info("[OreDropDiag] onBlockBreak 触发 state={} canceled={} level={} player={}",
+                event.getState(), event.isCanceled(), event.getLevel().getClass().getSimpleName(),
+                event.getPlayer() == null ? "null" : event.getPlayer().getClass().getSimpleName());
         if (event.isCanceled() || !(event.getLevel() instanceof ServerLevel level)
                 || !(event.getPlayer() instanceof ServerPlayer player)) {
             return;
@@ -33,16 +40,19 @@ public final class KunJinKaoOreDropHandler {
 
         ItemStack tool = player.getMainHandItem();
         if (!(KunJinKaoSwordItem.isSwordLike(tool))) {
+            LOGGER.info("[OreDropDiag] 手里不是注入物品/剑: {}", tool);
             return;
         }
 
         BlockState state = event.getState();
         if (!isOre(state)) {
+            LOGGER.info("[OreDropDiag] 不是矿石: {}", state);
             return;
         }
 
         int multiplier = KunJinKaoSwordItem.getOreDropMultiplier(tool);
         if (multiplier <= 1) {
+            LOGGER.info("[OreDropDiag] 倍率<=1: {}", multiplier);
             return;
         }
 
@@ -50,6 +60,7 @@ public final class KunJinKaoOreDropHandler {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         List<ItemStack> rawDrops = Block.getDrops(state, level, pos, blockEntity, player, tool);
         if (rawDrops.isEmpty()) {
+            LOGGER.info("[OreDropDiag] 原版掉落为空: {}", state);
             return;
         }
         // 开了挖掘熔炼时，补发的这一份也必须是熔炼产物。
@@ -67,8 +78,10 @@ public final class KunJinKaoOreDropHandler {
         // 安全性：本处理器是 LOWEST 优先级、且前面已判过 isCanceled，走到这里说明
         // 这一下确实被允许破坏；即使后续有别的 mod 又取消了破坏，最坏结果是多掉几份，
         // 不会导致复制物品。
+        LOGGER.info("[OreDropDiag] 补发 multiplier={} baseDrops={}", multiplier, baseDrops.size());
+        // 1.20.1 上 BreakEvent 路径不可靠（方块尚未移除、execute 又是立即执行），
+        // 改由 BlockPlayerDestroyMixin 在 playerDestroy 之后接管，这里不再补发。
         for (ItemStack baseDrop : baseDrops) {
-            spawnExtraStacks(level, pos, baseDrop, multiplier - 1);
         }
     }
 
@@ -107,6 +120,10 @@ public final class KunJinKaoOreDropHandler {
      * 但它的代价只是"多掉几份"，而漏判的代价是"这个功能对这个模组完全没用"，
      * 两边权衡下来宁可宽一点。
      */
+    public static boolean isOreBlock(BlockState state) {
+        return isOre(state);
+    }
+
     private static boolean isOre(BlockState state) {
         if (state.is(Tags.Blocks.ORES)) {
             return true;
