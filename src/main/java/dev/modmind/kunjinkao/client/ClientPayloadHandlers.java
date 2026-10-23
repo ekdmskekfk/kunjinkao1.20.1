@@ -34,7 +34,18 @@ public final class ClientPayloadHandlers {
     }
 
     public static void handle(Object payload, net.minecraftforge.network.NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
+        // ClientHooks 是在已经切回主线程之后才调进来的，传进来的 context 就是 null。
+        // 早期这里直接 context.enqueueWork(...)，对 null 调方法抛 NPE，
+        // 异常被主线程任务执行器吞掉 —— 表现就是"输入密码后毫无反应"（所有 S2C 包都受影响）。
+        if (context == null) {
+            dispatch(payload);
+            return;
+        }
+        context.enqueueWork(() -> dispatch(payload));
+    }
+
+    private static void dispatch(Object payload) {
+        {
             if (payload instanceof OverwriteEffectPayload effect) {
                 switch (effect.phase()) {
                     case OverwriteEffectPayload.PHASE_START -> KunJinKaoClientOverwriteEffects.start(effect.entityId(), effect.remainingTicks(), effect.phaseDetail());
@@ -95,7 +106,7 @@ public final class ClientPayloadHandlers {
                 // 注入：只更新进度条的表现状态，成败判定全在服务端。
                 applyInjectionState(injection);
             }
-        });
+        }
     }
 
     /** 注入进度：START 开条，ABORT 收条，DONE 收条并闪一下成功提示。 */
