@@ -49,8 +49,8 @@ public final class AdminPasswordScreen extends Screen {
      * "背景只画一遍 → 面板 → 控件"的正确顺序：画到 super.render 之后会被 0xE0 的面板
      * 盖住输入框与按钮，画到 super.render 之前又会被背景纹理压暗（原 bug）。
      */
-    @Override
-    public void renderBackground(GuiGraphics graphics) {
+    /** 面板/标题/文字：1.20.1 的 Screen#render 不会调用 renderBackground，必须由 render 自己调。 */
+    private void drawChrome(GuiGraphics graphics) {
         // 不再手动调用 renderBackground：背景由 super.render 内部负责，只保留这一次绘制
         super.renderBackground(graphics);
         int panelWidth = 220;
@@ -84,6 +84,7 @@ public final class AdminPasswordScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // 背景与控件都由 super.render 负责；密码面板见上面的 renderBackground
+        drawChrome(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 

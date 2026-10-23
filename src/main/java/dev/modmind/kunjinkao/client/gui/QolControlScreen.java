@@ -329,7 +329,12 @@ public final class QolControlScreen extends Screen {
      * 之后又会盖住搜索框。
      */
     @Override
-    public void renderBackground(GuiGraphics graphics) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        drawChrome(graphics);
+        super.render(graphics, mouseX, mouseY, partialTick);
+    }
+    /** 面板/标题/文字：1.20.1 的 Screen#render 不会调用 renderBackground，必须由 render 自己调。 */
+    private void drawChrome(GuiGraphics graphics) {
         // 1.20.1 的 renderBackground 只有单参，拿不到鼠标坐标；用 render() 里记下的副本
         // （悬停高亮与提示都依赖它）。1.21 的四参重载能直接拿到。
         int mouseX = this.hoverMouseX;

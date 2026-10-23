@@ -220,8 +220,8 @@ public class AcceleratorScreen extends Screen {
      * 若把面板画到 render 里 super.render 之后，alpha 0xD0 的面板会盖住滑轮与开关按钮；
      * 画到 super.render 之前则会被背景纹理压暗（即原来的 bug）。
      */
-    @Override
-    public void renderBackground(GuiGraphics graphics) {
+    /** 面板/标题/文字：1.20.1 的 Screen#render 不会调用 renderBackground，必须由 render 自己调。 */
+    private void drawChrome(GuiGraphics graphics) {
         // 手动调用 renderBackground 已删除：super.render 自带背景，这里只保留唯一的一次背景绘制
         super.renderBackground(graphics);
         int left = (this.width - PANEL_WIDTH) / 2;
@@ -278,6 +278,7 @@ public class AcceleratorScreen extends Screen {
         // 而面板里的悬停高亮要它 —— 所以在 render 里记下来，背景绘制时读这份副本。
         this.hoverMouseX = mouseX;
         this.hoverMouseY = mouseY;
+        drawChrome(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 

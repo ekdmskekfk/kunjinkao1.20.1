@@ -719,6 +719,11 @@ public final class SwordOptionsScreen extends Screen {
      */
     @Override
     public void renderBackground(GuiGraphics graphics) {
+        drawChrome(graphics);
+    }
+
+    /** 面板/标题/分区：1.20.1 的 Screen#render 不会调用 renderBackground，必须由 render 自己调。 */
+    private void drawChrome(GuiGraphics graphics) {
         super.renderBackground(graphics);
 
         KunJinKaoUi.panel(graphics, panelX, panelY, panelW, panelH);
@@ -751,6 +756,7 @@ public final class SwordOptionsScreen extends Screen {
         // 背景与控件都由 super.render 负责；面板与分区见上面的 renderBackground。
         // 每帧检查一次节流窗口：窗口一过就补发滑条最后的值（相当于拖动结束后的收尾发送）。
         flushPendingSettings(false);
+        drawChrome(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 
