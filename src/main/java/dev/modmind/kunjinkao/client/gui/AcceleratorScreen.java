@@ -227,13 +227,13 @@ public class AcceleratorScreen extends Screen {
         int left = (this.width - PANEL_WIDTH) / 2;
         int top = (this.height - PANEL_HEIGHT) / 2;
 
-        graphics.fill(left, top, left + PANEL_WIDTH, top + PANEL_HEIGHT, COLOR_PANEL);
-        graphics.fill(left, top, left + PANEL_WIDTH, top + 1, COLOR_ACCENT);
-        graphics.fill(left, top + PANEL_HEIGHT - 1, left + PANEL_WIDTH, top + PANEL_HEIGHT, COLOR_BORDER);
-        graphics.fill(left, top, left + 1, top + PANEL_HEIGHT, COLOR_BORDER);
-        graphics.fill(left + PANEL_WIDTH - 1, top, left + PANEL_WIDTH, top + PANEL_HEIGHT, COLOR_BORDER);
+        KunJinKaoUi.panel(graphics, left, top, PANEL_WIDTH, PANEL_HEIGHT);
+        
+        
+        
+        
 
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, top + 12, COLOR_ACCENT);
+        KunJinKaoUi.titleBar(graphics, this.font, this.title, left, top, PANEL_WIDTH);
 
         // ===== 过滤区 =====
         graphics.drawString(this.font, Component.translatable("gui.kunjinkao.accelerator.filter"),

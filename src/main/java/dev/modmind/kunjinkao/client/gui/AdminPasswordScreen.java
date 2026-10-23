@@ -57,10 +57,10 @@ public final class AdminPasswordScreen extends Screen {
         int panelHeight = 105;
         int x = (width - panelWidth) / 2;
         int y = (height - panelHeight) / 2;
-        graphics.fill(x, y, x + panelWidth, y + panelHeight, 0xE0122030);
-        graphics.fill(x, y, x + panelWidth, y + 1, 0xFF57CFFF);
-        graphics.fill(x, y + panelHeight - 1, x + panelWidth, y + panelHeight, 0xFF57CFFF);
-        graphics.drawCenteredString(font, title, width / 2, y + 16, 0xFFE9FBFF);
+        KunJinKaoUi.panel(graphics, x, y, panelWidth, panelHeight);
+        
+        
+        KunJinKaoUi.titleBar(graphics, font, title, x, y, panelWidth);
         graphics.drawString(font, "密码", x + 20, y + 30, 0xFF8FEAFF);
         if (hint != null) {
             // 提示画在面板下方：面板 105 高、按钮底边在 y+92，塞进面板会挤到按钮
