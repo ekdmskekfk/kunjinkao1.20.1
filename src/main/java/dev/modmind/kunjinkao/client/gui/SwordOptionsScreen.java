@@ -771,6 +771,18 @@ public final class SwordOptionsScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 精确输入框开着时，回车/Esc 由它优先处理（否则会被下面的关界面逻辑或控件吃掉）
+        if (sliderInput != null) {
+            if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER
+                    || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) {
+                applySliderInput();
+                return true;
+            }
+            if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+                closeSliderInput();
+                return true;
+            }
+        }
         if (KunJinKaoKeyBindings.OPEN_SWORD_OPTIONS.getKey().equals(
                 com.mojang.blaze3d.platform.InputConstants.getKey(keyCode, scanCode))) {
             onClose();

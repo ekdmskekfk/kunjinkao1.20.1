@@ -330,8 +330,13 @@ public final class QolControlScreen extends Screen {
      */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.hoverMouseX = mouseX;
+        this.hoverMouseY = mouseY;
         drawChrome(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
+        // 提示压在控件之上，必须在 super.render 之后画。
+        drawBindTooltip(graphics, mouseX, mouseY);
+        drawRowTooltip(graphics, mouseX, mouseY);
     }
     /** 面板/标题/文字：1.20.1 的 Screen#render 不会调用 renderBackground，必须由 render 自己调。 */
     private void drawChrome(GuiGraphics graphics) {
@@ -349,8 +354,6 @@ public final class QolControlScreen extends Screen {
         drawTabStrip(graphics, mouseX, mouseY);
         drawRows(graphics, mouseX, mouseY);
         // 提示画在最后：它是压在内容上面的一层，先画就会被后面的行盖掉。
-        drawBindTooltip(graphics, mouseX, mouseY);
-        drawRowTooltip(graphics, mouseX, mouseY);
     }
 
     /**
