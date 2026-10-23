@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -40,6 +41,22 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+// ---------------------------------------------------------------------------
+// Mixin 接入（这个工程此前从未接上：jar 的 MANIFEST 没有 MixinConfigs、
+// 也没有 refmap，kunjinkao.mixins.json 里列的混入类全部没生效）。
+//
+//   add sourceSets.main, 'kunjinkao.refmap.json'
+//       让 Mixin 注解处理器生成 refmap，并作为编译产物打进 jar 根目录。
+//       Forge 1.20.1 运行时用 SRG 名，没有 refmap 的话
+//       @Inject(method = "playerDestroy") 这类字符串找不到目标方法。
+//   config 'kunjinkao.mixins.json'
+//       把配置注册给 MixinGradle（同时会写进 jar 的 MANIFEST）。
+// ---------------------------------------------------------------------------
+mixin {
+    add sourceSets.main, 'kunjinkao.refmap.json'
+    config 'kunjinkao.mixins.json'
+}
+
 repositories {
     maven { url = 'https://maven.aliyun.com/repository/public' }
     maven { url = 'https://maven.minecraftforge.net/' }
@@ -48,6 +65,9 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Mixin 注解处理器：生成 kunjinkao.refmap.json（官方名 → SRG 名）。
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     // 编译期依赖：1.20.1 / Forge 版本，由 Modrinth 下载后放进 libs/（不进仓库）
     compileOnly files(
             'libs/appliedenergistics2-forge-15.4.11.jar',
@@ -94,6 +114,8 @@ jar {
                 'Implementation-Title'  : project.name,
                 'Implementation-Version': mod_version,
                 'Implementation-Vendor' : mod_authors,
+                // 双保险：MixinGradle 的 config 也会写这一条，显式写上更直观。
+                'MixinConfigs'          : 'kunjinkao.mixins.json',
         ])
     }
 }

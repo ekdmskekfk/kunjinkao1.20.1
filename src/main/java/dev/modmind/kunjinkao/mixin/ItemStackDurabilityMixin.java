@@ -42,7 +42,9 @@ public abstract class ItemStackDurabilityMixin {
             require = 0)
     // 1.21 的目标是 hurtAndBreak(int, ServerLevel, LivingEntity, Consumer)；
     // 1.20.1 没有 ServerLevel 那一位，所以加工参数也要跟着少一个。
-    private int kunjinkao$negateDurabilityDamage(int amount, LivingEntity entity, Consumer<Item> onBreak) {
+    // @ModifyVariable 的处理器签名 = 被改的变量 + 目标方法全部参数，一个都不能省。
+    private int kunjinkao$negateDurabilityDamage(int amount, int ignored, LivingEntity entity,
+                                                 Consumer<Item> onBreak) {
         if (amount <= 0 || !(entity instanceof ServerPlayer player)) {
             return amount;
         }

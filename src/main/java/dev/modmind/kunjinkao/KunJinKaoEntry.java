@@ -19,7 +19,6 @@ public final class KunJinKaoEntry {
     public static final String MOD_ID = "kunjinkao";
 
     public KunJinKaoEntry() {
-        System.out.println("[KunjinKao] BUILD=ore-mixin-1");
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         SwordRegistry.register(modEventBus);
         KunJinKaoEntities.register(modEventBus);
@@ -50,7 +49,8 @@ public final class KunJinKaoEntry {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.AdminAdventureSwordGrantHandler());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.KunJinKaoUnbreakableBlockHandler());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.KunJinKaoExtraLootHandler());
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.KunJinKaoOreDropHandler());
+        // 矿石判定只作为静态工具给 BlockPlayerDestroyMixin 用，不再注册事件处理器
+        // （BreakEvent 那条路在本整合包里从不触发，留着只会和 mixin 重复补发）。
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new dev.modmind.kunjinkao.event.SwordAutoPickupHandler());
         // —— 静态处理器：1.20.1 用 register(Class) 与 1.21.1 的 register(Class) 等价 ——
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dev.modmind.kunjinkao.event.AdminSwordCraftingHandler.class);

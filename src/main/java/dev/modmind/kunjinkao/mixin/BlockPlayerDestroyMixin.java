@@ -30,15 +30,21 @@ import java.util.List;
 public class BlockPlayerDestroyMixin {
 
     @Inject(method = "playerDestroy", at = @At("RETURN"))
-    private void kunjinkao$multiplyOreDrops(Player player, Level level, BlockPos pos, BlockState state,
+    private void kunjinkao$multiplyOreDrops(Level level, Player player, BlockPos pos, BlockState state,
                                              BlockEntity blockEntity, ItemStack tool, CallbackInfo ci) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        // [实验2] 忽略手持物
-        int multiplier = 2; // [实验2] 硬编码 2，忽略物品里的倍率
-        // [实验2] 不看倍率
-        // [实验] 暂时去掉矿石判定：任何方块都翻倍，用来验证钩子是否真的在跑。
+        if (!KunJinKaoSwordItem.isSwordLike(tool)) {
+            return;
+        }
+        int multiplier = KunJinKaoSwordItem.getOreDropMultiplier(tool);
+        if (multiplier <= 1) {
+            return;
+        }
+        if (!KunJinKaoOreDropHandler.isOreBlock(state)) {
+            return;
+        }
         List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, blockEntity, player, tool);
         for (ItemStack drop : drops) {
             for (int i = 1; i < multiplier; i++) {
