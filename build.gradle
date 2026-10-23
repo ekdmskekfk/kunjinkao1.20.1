@@ -41,6 +41,11 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+// 启用 ForgeGradle 的 Jar-in-Jar：把 MixinExtras 直接打进 mod jar，
+// 玩家不再需要单独安装它，暂停场（LevelPauseMixin 的 @Local）也不会因为
+// "某个整合包没带 MixinExtras" 而在启动时崩掉。
+jarJar.enable()
+
 // ---------------------------------------------------------------------------
 // Mixin 接入（这个工程此前从未接上：jar 的 MANIFEST 没有 MixinConfigs、
 // 也没有 refmap，kunjinkao.mixins.json 里列的混入类全部没生效）。
@@ -68,6 +73,14 @@ dependencies {
 
     // Mixin 注解处理器：生成 kunjinkao.refmap.json（官方名 → SRG 名）。
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // 内置 MixinExtras：1.20.1 的 Forge 不提供它，而 LevelPauseMixin 的 @Local
+    // 依赖它。用官方 Forge 版（GAMELIBRARY）JarJar 进 jar；它内部还会再 JiJ
+    // 一层 MixinExtras-0.3.5.jar，Forge 的 Jar-in-Jar 会递归处理。
+    jarJar(group: 'io.github.llamalad7', name: 'mixinextras-forge', version: '0.3.5') {
+        jarJar.ranged(it, '[0.3.5,)')
+    }
+
     // 编译期依赖：1.20.1 / Forge 版本，由 Modrinth 下载后放进 libs/（不进仓库）
     compileOnly files(
             'libs/appliedenergistics2-forge-15.4.11.jar',
@@ -139,11 +152,11 @@ def testInstanceModsDir = providers.gradleProperty('testInstanceModsDir')
 
 tasks.register('deployToTestInstance') {
     group = 'build'
-    description = '把 reobf 后的主 jar 复制到测试实例的 mods 目录，并删除其中的旧 kunjinkao 版本'
-    dependsOn tasks.named('reobfJar')
+    description = '把 reobf 后的 JiJ 主 jar（-all）复制到测试实例的 mods 目录，并删除其中的旧 kunjinkao 版本'
+    dependsOn tasks.named('reobfJarJar')
     doNotTrackState('目标目录在工程之外，且可能含 Gradle 读不动的文件')
 
-    def jarProvider = tasks.named('jar').flatMap { it.archiveFile }
+    def jarProvider = tasks.named('jarJar').flatMap { it.archiveFile }
     def targetDir = file(testInstanceModsDir)
 
     onlyIf { jarProvider.get().asFile.exists() }
