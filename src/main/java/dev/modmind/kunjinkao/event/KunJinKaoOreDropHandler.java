@@ -57,20 +57,19 @@ public final class KunJinKaoOreDropHandler {
         // 同一个开关会挖出"一半是锭、一半是原矿"，看起来像随机 bug。
         final List<ItemStack> baseDrops = KunJinKaoAutoSmeltHandler.smeltList(level, tool, rawDrops);
 
-        // BreakEvent 在原版放出掉落前触发；排到同一服务器任务队列中，
-        // 仅当该方块确实已被破坏时再补足 multiplier - 1 份掉落。
-        level.getServer().execute(() -> {
-            // 有意收紧：只认"目标位置已经变成空气"这一种破坏结果。
-            // 原来写的是"不再是原方块就算破坏"，于是方块被换成别的方块（其它 mod/玩家顺手放上方块、
-            // 替换成流体等）时也会补发矿石，属于越权补发。代价是这类"替换式破坏"不再加倍，
-            // 但原版正常挖掘最终留下的都是空气，实际玩法不受影响。
-            if (!level.getBlockState(pos).isAir()) {
-                return;
-            }
-            for (ItemStack baseDrop : baseDrops) {
-                spawnExtraStacks(level, pos, baseDrop, multiplier - 1);
-            }
-        });
+        // BreakEvent 在原版放出掉落之前触发。这里直接补发 multiplier - 1 份。
+        //
+        // 1.20.1 上不能再用「排进任务队列、等方块变成空气再补」那套：
+        // MinecraftServer#execute 在服务端线程上是**立即执行**的，而 BreakEvent 又排在
+        // 方块被移除之前 —— 那一刻 isAir() 还是 false，补发永远被跳过，
+        // 表现为「矿石倍率怎么调都没效果」。（1.21.1 的时序不同，所以那边没暴露。）
+        //
+        // 安全性：本处理器是 LOWEST 优先级、且前面已判过 isCanceled，走到这里说明
+        // 这一下确实被允许破坏；即使后续有别的 mod 又取消了破坏，最坏结果是多掉几份，
+        // 不会导致复制物品。
+        for (ItemStack baseDrop : baseDrops) {
+            spawnExtraStacks(level, pos, baseDrop, multiplier - 1);
+        }
     }
 
     private static void spawnExtraStacks(ServerLevel level, BlockPos pos, ItemStack baseDrop, int copies) {
