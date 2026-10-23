@@ -18,13 +18,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 /**
- * Ore drop multiplier, injected at Block#playerDestroy (1.20.1).
+ * 矿石挖掘倍率 —— <b>兜底路径</b>，不是主路径（1.20.1）。
  *
- * WHY A MIXIN: on 1.20.1 there is no BlockDropsEvent, and the BlockEvent.BreakEvent
- * path proved unreliable here (fires before the block is removed, while
- * MinecraftServer#execute runs inline). playerDestroy is called exactly once per
- * destroyed block, after the harvest checks, with the old state still in hand -
- * so the drops can simply be multiplied there, with no timing games.
+ * <p>主路径在 {@code SwordAutoPickupHandler#onBlockBreak}：它接住 {@code BlockEvent.BreakEvent}
+ * 后取消原版破坏、自己算掉落、再用 {@code destroyBlock(pos, false, …)} 无掉落移除方块，
+ * 于是原版 {@code Block#playerDestroy} 根本不会被调用 —— 倍率必须在那里生效。</p>
+ *
+ * <p>那么为什么还留这个混入？因为上面那条路只在"掉落非空"时才接管（掉落为空会直接返回、
+ * 让原版继续走）。凡是没被取消、最终走原版 {@code destroyBlock(pos, true, …)} 的破坏
+ * （例如某些模组方块、或将来新增的批量破坏路径），都会落到这里补上倍率。
+ * 两条路径互斥：事件一旦被取消，{@code playerDestroy} 就不会执行，不会重复加倍。</p>
  */
 @Mixin(Block.class)
 public class BlockPlayerDestroyMixin {
@@ -39,10 +42,7 @@ public class BlockPlayerDestroyMixin {
             return;
         }
         int multiplier = KunJinKaoSwordItem.getOreDropMultiplier(tool);
-        if (multiplier <= 1) {
-            return;
-        }
-        if (!KunJinKaoOreDropHandler.isOreBlock(state)) {
+        if (multiplier <= 1 || !KunJinKaoOreDropHandler.isOreBlock(state)) {
             return;
         }
         List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, blockEntity, player, tool);

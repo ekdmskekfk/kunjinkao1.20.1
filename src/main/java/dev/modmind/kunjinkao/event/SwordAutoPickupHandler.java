@@ -133,6 +133,19 @@ public final class SwordAutoPickupHandler {
         if (drops.isEmpty()) {
             return;
         }
+        // 矿石挖掘倍率必须在这里生效：本方法取消了原版破坏并用 destroyBlock(pos, false, …)
+        // 无掉落移除方块，原版 Block#playerDestroy 根本不会被调用，
+        // 所以挂在 playerDestroy 上的混入对"用剑挖矿"永远是死代码。
+        int multiplier = KunJinKaoSwordItem.getOreDropMultiplier(tool);
+        if (multiplier > 1 && KunJinKaoOreDropHandler.isOreBlock(state)) {
+            List<ItemStack> expanded = new ArrayList<>(drops.size() * multiplier);
+            for (ItemStack drop : drops) {
+                for (int i = 0; i < multiplier; i++) {
+                    expanded.add(drop.copy());
+                }
+            }
+            drops = expanded;
+        }
         event.setCanceled(true);
         level.destroyBlock(pos, false, player);
         giveOrDrop(player, drops);
