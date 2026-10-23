@@ -133,6 +133,9 @@ public final class SwordAutoPickupHandler {
         if (drops.isEmpty()) {
             return;
         }
+        // 挖掘熔炼：先把掉落换成熔炼产物，再按倍率展开。
+        // 顺序有意义 —— 先展开就要多做 multiplier 倍的配方查询，结果其实一样。
+        drops = KunJinKaoAutoSmeltHandler.smeltList(level, tool, drops);
         // 矿石挖掘倍率必须在这里生效：本方法取消了原版破坏并用 destroyBlock(pos, false, …)
         // 无掉落移除方块，原版 Block#playerDestroy 根本不会被调用，
         // 所以挂在 playerDestroy 上的混入对"用剑挖矿"永远是死代码。

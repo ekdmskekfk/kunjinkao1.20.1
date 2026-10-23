@@ -14,20 +14,16 @@ import java.util.List;
 /**
  * 挖掘熔炼：把挖到的掉落自动过一遍熔炉配方。
  * <p>
- * <b>本批只落了"换算"这一半</b>：{@link #isActive} / {@link #smeltAll} / {@link #smeltList}。
- * 原因见下。
- * <p>
  * 原实现挂在 NeoForge 的 {@code BlockDropsEvent} 上（能拿到"已经生成好的掉落实体"，
- * 直接就地替换它们的物品）。1.20.1 没有这个事件，只能用 {@code BlockEvent.BreakEvent}
- * 自己接管破坏与掉落 —— 那套写法要等下一批和"自动入包"一起统一做，
- * 否则同一个 BreakEvent 上会有两处各自 setCanceled / destroyBlock，互相打架。
+ * 直接就地替换它们的物品）。1.20.1 没有这个事件，所以改由
+ * {@code SwordAutoPickupHandler#onBlockBreak} 接管整刀破坏时调用 {@link #smeltList}：
+ * 先熔炼、再按矿石倍率展开，最后统一入包。
  * <p>
- * 所以现在生效的是两条<b>本来就绕过 BlockDropsEvent</b> 的路径：
+ * 另外两条本来就绕过 {@code BlockDropsEvent} 的路径也复用同一套换算：
  * <ul>
- *   <li>挖矿倍数补发（{@code KunJinKaoOreDropHandler}）；</li>
- *   <li>不可破坏方块的自算掉落（{@code KunJinKaoUnbreakableBlockHandler}）。</li>
+ *   <li>{@code KunJinKaoUnbreakableBlockHandler}（基岩/屏障/命令方块的自算掉落）；</li>
+ *   <li>挖矿倍数补发（只在原版路径真的走到时才需要）。</li>
  * </ul>
- * 普通挖掘的掉落替换在下一批补上，届时把 {@code onBlockBreak} 加回本类即可。
  * <p>
  * 1.20.1 差异：getRecipeFor 直接返回 {@code Optional<T>}（1.21 是 {@code RecipeHolder}，多一层 .value()）；hasSilkTouch 用 {@link EnchantmentHelper}（附魔是静态字段，
  * 1.21 才改成 Holder + ItemEnchantments 组件）。
