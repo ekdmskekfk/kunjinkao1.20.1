@@ -53,7 +53,7 @@ public final class KunJinKaoEntities {
      */
     public static final RegistryObject<Item> HAND_SPAWN_EGG = SwordRegistry.ITEMS.register(
             "hand_spawn_egg",
-            () -> new SpawnEggItem(HAND.get(), 0xE9C9B8, 0xF6F1E7, new Item.Properties()));
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(HAND, 0xE9C9B8, 0xF6F1E7, new Item.Properties()));
 
     private KunJinKaoEntities() {
     }
