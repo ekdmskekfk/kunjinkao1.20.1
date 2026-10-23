@@ -71,12 +71,15 @@ public final class KunJinKaoUi {
     /** 画一个完整面板：底、双层描边、扫描线、四角括号。 */
     public static void panel(GuiGraphics graphics, int x, int y, int w, int h) {
         graphics.fill(x, y, x + w, y + h, PANEL_BG);
-        // 外描边：四边各 1px 暗色
-        frame(graphics, x, y, w, h, BORDER_OUTER);
-        // 内描边：再缩 1px 画亮色
-        frame(graphics, x + 1, y + 1, w - 2, h - 2, BORDER_INNER);
-        scanlines(graphics, x + 2, y + 2, w - 4, h - 4);
-        corners(graphics, x, y, w, h);
+        // 暗描边画在面板【外面】一圈：面板内部可用区域与改造前完全一致。
+        // 之前把亮色内框画在 x+1/y+1，正好压住了贴边摆放的控件 ——
+        // 剑设置的翻页按钮就在 panelY+1，看起来像"挤到框框上"。
+        frame(graphics, x - 1, y - 1, w + 2, h + 2, BORDER_OUTER);
+        // 亮色描边贴面板边缘（1px，与改造前那圈 drawBorder 同位置）
+        frame(graphics, x, y, w, h, BORDER_INNER);
+        scanlines(graphics, x + 1, y + 1, w - 2, h - 2);
+        // 四角括号也画在外框上，不再侵占内容区
+        corners(graphics, x - 1, y - 1, w + 2, h + 2);
     }
 
     /** 只画一圈 1px 边框。 */
