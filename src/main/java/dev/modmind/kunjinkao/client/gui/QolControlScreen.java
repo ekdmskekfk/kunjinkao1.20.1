@@ -338,7 +338,7 @@ public final class QolControlScreen extends Screen {
 
         KunJinKaoUi.panel(graphics, panelX, panelY, panelW, panelH);
         
-        KunJinKaoUi.titleBar(graphics, font, title, panelX, panelY, panelW);
+        KunJinKaoUi.titleText(graphics, font, title, panelX + 8, panelY + 5);
 
         drawCloseButton(graphics, mouseX, mouseY);
         drawTabStrip(graphics, mouseX, mouseY);

@@ -29,7 +29,7 @@ public final class KunJinKaoUi {
     /** 面板内边距。 */
     public static final int PAD = 12;
     /** 标题栏高度。 */
-    public static final int TITLE_BAR = 24;
+    public static final int TITLE_BAR = 18;
     /** 四角括号臂长。 */
     public static final int CORNER_LEN = 10;
 
@@ -46,7 +46,7 @@ public final class KunJinKaoUi {
     /** 角标颜色。 */
     public static final int CORNER = 0xFF8FE6FF;
     /** 扫描线。 */
-    public static final int SCANLINE = 0x16000000;
+    public static final int SCANLINE = 0x38000000;
     /** 行悬停高亮。 */
     public static final int ROW_HOVER = 0x3357CFFF;
     /** 分隔线。 */
@@ -122,11 +122,11 @@ public final class KunJinKaoUi {
                                int x, int y, int w) {
         graphics.fill(x + 2, y + 2, x + w - 2, y + TITLE_BAR, TITLE_BG);
         // 左侧竖条：状态灯
-        graphics.fill(x + 2, y + 6, x + 4, y + TITLE_BAR - 4, BORDER_INNER);
+        graphics.fill(x + 2, y + 4, x + 4, y + TITLE_BAR - 3, BORDER_INNER);
         String glyph = KunJinKaoPalette.MOJIBAKE;
-        graphics.drawString(font, glyph, x + PAD, y + 8, CORNER, false);
+        graphics.drawString(font, glyph, x + PAD, y + 5, CORNER, false);
         int glyphWidth = font.width(glyph) + 4;
-        graphics.drawString(font, title, x + PAD + glyphWidth, y + 8, TEXT_TITLE, false);
+        graphics.drawString(font, title, x + PAD + glyphWidth, y + 5, TEXT_TITLE, false);
         // 底部渐隐线：左亮右暗
         int lineY = y + TITLE_BAR;
         graphics.fill(x + 2, lineY, x + w - 2, lineY + 1, BORDER_INNER);
@@ -168,6 +168,19 @@ public final class KunJinKaoUi {
     /** 水平分隔线。 */
     public static void divider(GuiGraphics graphics, int x, int y, int w) {
         graphics.fill(x, y, x + w, y + 1, DIVIDER);
+    }
+
+    /**
+     * 只画标题文字（乱码记号 + 标题），不画底色与分隔线。
+     *
+     * <p>给"内容从面板顶端就开始"的界面用：功能控制台与剑设置的第一行在 panelY+1 附近，
+     * 画整条标题栏会把它们盖住 —— 那是"字挤进框里"的真正原因，不是字号问题。</p>
+     */
+    public static void titleText(GuiGraphics graphics, Font font, Component title, int x, int y) {
+        String glyph = KunJinKaoPalette.MOJIBAKE;
+        graphics.drawString(font, glyph, x, y, CORNER, false);
+        int glyphWidth = font.width(glyph) + 4;
+        graphics.drawString(font, title, x + glyphWidth, y, TEXT_TITLE, false);
     }
 
     /** 焦点环：键盘/手柄操作时指示当前控件。 */
