@@ -618,9 +618,9 @@ public final class SwordOptionsScreen extends Screen {
     public void renderBackground(GuiGraphics graphics) {
         super.renderBackground(graphics);
 
-        graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, COLOR_PANEL);
-        drawBorder(graphics, panelX, panelY, panelW, panelH, COLOR_BORDER);
-        graphics.drawString(font, title, panelX + 8, panelY + 9, COLOR_TITLE, false);
+        KunJinKaoUi.panel(graphics, panelX, panelY, panelW, panelH);
+        
+        KunJinKaoUi.titleBar(graphics, font, title, panelX, panelY, panelW);
 
         for (int i = 0; i < sectionBoxes.size(); i++) {
             int[] box = sectionBoxes.get(i);

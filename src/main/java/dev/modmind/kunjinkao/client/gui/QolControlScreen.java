@@ -336,9 +336,9 @@ public final class QolControlScreen extends Screen {
         int mouseY = this.hoverMouseY;
         super.renderBackground(graphics);
 
-        graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, COLOR_PANEL);
-        drawBorder(graphics, panelX, panelY, panelW, panelH, KunJinKaoPalette.NORMAL);
-        graphics.drawString(font, title, panelX + SIDE, panelY + 8, COLOR_TEXT, false);
+        KunJinKaoUi.panel(graphics, panelX, panelY, panelW, panelH);
+        
+        KunJinKaoUi.titleBar(graphics, font, title, panelX, panelY, panelW);
 
         drawCloseButton(graphics, mouseX, mouseY);
         drawTabStrip(graphics, mouseX, mouseY);
