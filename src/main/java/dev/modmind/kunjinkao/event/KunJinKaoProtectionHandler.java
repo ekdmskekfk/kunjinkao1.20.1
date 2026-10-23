@@ -153,7 +153,8 @@ public class KunJinKaoProtectionHandler {
             // 例外：该玩家已被剑打上处决标记时不能拦——target.kill() 用的 genericKill 没有来源实体，
             // 正好落在这个分支里；拦下来会让「砍中即秒杀」对持剑玩家完全失效。
             if (target instanceof Player player && hasSwordInInventory(player)
-                    && !player.getPersistentData().getBoolean(KILL_BY_OVERWRITE_KEY)) {
+                    && !player.getPersistentData().getBoolean(KILL_BY_OVERWRITE_KEY)
+                    && isInvincibleEnabled(player)) {
                 LOGGER.debug("[PROTECT-ATTACK] cancel damage source={} on sword-holding player", event.getSource().getMsgId());
                 event.setCanceled(true);
             }
@@ -282,5 +283,10 @@ public class KunJinKaoProtectionHandler {
             }
         }
         return false;
+    }
+    /** 「金刚不坏」是否生效（功能面板里的开关）。 */
+    private static boolean isInvincibleEnabled(Player player) {
+        return player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && KunJinKaoQolHandler.isOn(serverPlayer, dev.modmind.kunjinkao.qol.QolSetting.INVINCIBLE);
     }
 }

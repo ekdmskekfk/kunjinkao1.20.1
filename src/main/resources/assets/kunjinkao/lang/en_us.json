@@ -169,6 +169,8 @@
   "screen.kunjinkao.qol.cosmetic_orbit.desc": "Three swords hover behind you, visible to every player (in first person they sit behind the camera, so you will not see them). When a player attacks you, one of them flies to their head and stabs downward: 1 point every 10 ticks for 5 seconds, always leaving them 1 heart.",
   "screen.kunjinkao.qol.cosmetic_aura": "Aura and Trail",
   "screen.kunjinkao.qol.cosmetic_aura.desc": "A slowly rotating pale blue ring at your feet, plus a fading pale blue particle trail as you move. Purely visual, and visible to every player.",
+  "screen.kunjinkao.qol.invincible": "Adamant Body",
+  "screen.kunjinkao.qol.invincible.desc": "Whether the full damage immunity granted by an injected item is active. When on, nothing can hurt you while you carry an injected item or the admin sword; turn it off to take damage normally. On by default.",
   "screen.kunjinkao.qol.stand_firm": "Stand Firm",
   "screen.kunjinkao.qol.stand_firm.desc": "You cannot be pushed, knocked back, launched, or teleported to another dimension: only your own movement keys (or jump) move you. Falling still works, otherwise you would hang in mid-air. Vehicles and elytra gliding still carry you as usual.",
   "screen.kunjinkao.qol.night_vision": "Star Eye Night Vision",

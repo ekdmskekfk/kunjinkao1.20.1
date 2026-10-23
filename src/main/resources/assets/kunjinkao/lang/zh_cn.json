@@ -169,6 +169,8 @@
   "screen.kunjinkao.qol.cosmetic_orbit.desc": "身后飘着三把剑（所有玩家都看得见；第一人称在镜头后面看不到）。有玩家攻击你时，其中一把会飞到他头顶向下刺，每 10 刻造成 1 点伤害，持续 5 秒，且始终给他留 1 颗心。",
   "screen.kunjinkao.qol.cosmetic_aura": "光环与拖尾",
   "screen.kunjinkao.qol.cosmetic_aura.desc": "脚下一圈缓慢旋转的淡蓝光环，移动时拖出一条渐隐的淡蓝尾迹。纯视觉，所有玩家都看得见。",
+  "screen.kunjinkao.qol.invincible": "金刚不坏",
+  "screen.kunjinkao.qol.invincible.desc": "注入物品自带的那份完全免疫是否生效。开启时只要背包里有注入物品或管理员剑，任何伤害都伤不到你；关掉就恢复成普通人，照常受伤。默认开启。",
   "screen.kunjinkao.qol.stand_firm": "屹立不倒",
   "screen.kunjinkao.qol.stand_firm.desc": "不会被推动、击退、弹飞，也不会被传送到其他维度 —— 只有你自己按方向键（或跳跃）才会移动。向下坠落仍然正常，否则会停在半空。骑乘载具与鞘翅滑翔时以它们为准。",
   "screen.kunjinkao.qol.night_vision": "星瞳夜视",

@@ -184,7 +184,16 @@ public enum QolSetting {
      * 生效分两半：客户端拒绝"不是自己产生的位移"（见 {@code StandFirmClient}），
      * 服务端取消击退与换维度（见 {@code KunJinKaoStandFirmHandler}）。
      */
-    STAND_FIRM(28, 204, Category.SURVIVAL, Scope.PERSONAL, Kind.TOGGLE, 0, 1, 0, "");
+    STAND_FIRM(28, 204, Category.SURVIVAL, Scope.PERSONAL, Kind.TOGGLE, 0, 1, 0, ""),
+
+    /**
+     * 金刚不坏：控制「注入物品自带的那份完全免疫」是否生效。
+     *
+     * <p>这份免疫原本一直开着：只要背包里有注入物品（或管理员剑），任何伤害都伤不到你。
+     * 做成开关是为了让管理员能临时变回普通人 —— 想正常挨打、测试别的模组、
+     * 或者单纯不想无敌时，不必把物品丢掉。默认开启，保持加开关之前的行为。</p>
+     */
+    INVINCIBLE(29, 0, Category.SURVIVAL, Scope.PERSONAL, Kind.TOGGLE, 0, 1, 1, "");
 
     /**
      * 面板顶部的分类标签。
