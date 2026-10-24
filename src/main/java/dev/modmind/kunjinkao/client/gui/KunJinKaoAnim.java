@@ -79,7 +79,7 @@ public final class KunJinKaoAnim {
     }
 
     public static int lerp(int from, int to, float t) {
-        return Math.round(lerp(from, to, t));
+        return Math.round(lerp((float) from, (float) to, t));
     }
 
     /** 按 ARGB 逐通道插值（含 alpha），用于渐变色与悬停淡入。 */
