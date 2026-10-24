@@ -138,6 +138,37 @@ public final class KunJinKaoAnim {
         HOVER.clear();
     }
 
+    // ===== 数值滚动 =====
+
+    /** 每个数值控件的当前显示值。弱键：控件被回收后条目自动消失。 */
+    private static final java.util.Map<Object, float[]> ROLL = new java.util.WeakHashMap<>();
+
+    /**
+     * 数值滚动：返回"此刻应该显示的整数"，向 {@code target} 平滑逼近。
+     *
+     * <p>滑条直接把 {@code updateMessage()} 里的真实值换成这个返回值，并在每帧重画一次，
+     * 数字就会从旧值滚到新值（约 200ms），而不是瞬间跳变。{@code speed} 越大越快，16 约等于 200ms。</p>
+     *
+     * <p>用弱键挂 {@code owner}（一般是滑条本身）：滑条随界面销毁时条目一起回收，
+     * 不需要任何清理代码，也不会因为界面反复开关而堆积。</p>
+     */
+    public static int roll(Object owner, int target, float speed) {
+        float[] state = ROLL.get(owner);
+        if (state == null) {
+            state = new float[]{target};
+            ROLL.put(owner, state);
+        }
+        float current = state[0];
+        if (Math.abs(target - current) < 0.5F) {
+            state[0] = target;
+            return target;
+        }
+        stepClock();
+        current += (target - current) * Math.min(1.0F, lastDelta * speed);
+        state[0] = current;
+        return Math.round(current);
+    }
+
     private static void stepClock() {
         long now = System.currentTimeMillis();
         if (lastFrameMillis == 0L) {
