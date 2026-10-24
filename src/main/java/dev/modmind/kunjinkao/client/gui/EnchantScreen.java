@@ -67,13 +67,13 @@ public final class EnchantScreen extends Screen {
         addRenderableWidget(Button.builder(Component.literal("-"), b -> level = Math.max(1, level - 1))
                 .bounds(panelX + 12, footerY, 20, 18).build());
         addRenderableWidget(Button.builder(Component.literal("+"), b -> level = Math.min(255, level + 1))
-                .bounds(panelX + 36, footerY, 20, 18).build());
+                .bounds(panelX + 74, footerY, 20, 18).build());
         addRenderableWidget(Button.builder(modeLabel(), b -> {
             mode = mode == EnchantPayload.MODE_BOOK ? EnchantPayload.MODE_ITEM : EnchantPayload.MODE_BOOK;
             b.setMessage(modeLabel());
-        }).bounds(panelX + 76, footerY, 150, 18).build());
+        }).bounds(panelX + 100, footerY, 150, 18).build());
         applyButton = addRenderableWidget(Button.builder(Component.translatable("screen.kunjinkao.enchant.apply"),
-                b -> apply()).bounds(panelX + 234, footerY, 134, 18).build());
+                b -> apply()).bounds(panelX + 254, footerY, 114, 18).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(panelX + PANEL_W - 96, panelY + PANEL_H - 26, 84, 18).build());
         updateApplyState();
@@ -177,7 +177,7 @@ public final class EnchantScreen extends Screen {
                 : Component.translatable("screen.kunjinkao.enchant.none").getString();
         graphics.drawString(font,
                 Component.translatable("screen.kunjinkao.enchant.level").getString() + " " + level,
-                panelX + 60, footerY + 5, KunJinKaoUi.TEXT_TITLE, false);
+                panelX + 34, footerY + 5, KunJinKaoUi.TEXT_TITLE, false);
         graphics.drawString(font, KunJinKaoUi.fit(font, selectedName, 120),
                 panelX + 12, footerY + 24, KunJinKaoUi.TEXT_MUTED, false);
     }
