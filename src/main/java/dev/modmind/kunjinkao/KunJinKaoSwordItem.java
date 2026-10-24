@@ -1132,6 +1132,24 @@ public class KunJinKaoSwordItem extends SwordItem {
         target.setLastHurtByPlayer(attacker);
     }
 
+    /**
+     * 只写「这一刀算剑打的」标记：击杀标记 + 抢夺设置值 + 写入时刻。
+     * <p>
+     * 与 {@link #applyKunJinKaoMark} 的区别是<b>不写</b>穿透持剑保护的
+     * {@code KILL_BY_OVERWRITE} 与两个处决开关 —— 那些是"授权处决"的语义，
+     * 普通挥砍不能带上，否则目标之后死于别的原因时会被当成一次合法处决。
+     * <p>
+     * 用于「伤害上限被调低、这次攻击交回原版结算」的分支：那一刀不会秒杀，
+     * 但只要目标最终是这几刀砍死的，掉落就该按抢夺等级增强。每挥一刀都会
+     * 刷新一次时刻，所以连续砍到死也始终落在 {@code MARK_VALID_TICKS} 之内。
+     */
+    public static void applyLootingMark(LivingEntity target, ItemStack stack) {
+        CompoundTag data = target.getPersistentData();
+        data.putBoolean(KunJinKaoDeathEventHandler.MARK_KEY, true);
+        data.putInt(KunJinKaoDeathEventHandler.LOOTING_MODE_ENTITY_KEY, getLootingLevelSetting(stack));
+        data.putLong(KunJinKaoDeathEventHandler.MARK_TICK_KEY, target.level().getGameTime());
+    }
+
     public static void applyKunJinKaoMark(LivingEntity target, ItemStack stack) {
         CompoundTag data = target.getPersistentData();
         data.putBoolean(KunJinKaoDeathEventHandler.MARK_KEY, true);

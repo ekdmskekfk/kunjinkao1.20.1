@@ -496,6 +496,10 @@ public class KunJinKaoOverwriteHandler {
         // 而 KunJinKaoProtectionHandler 里的上限判断走的是 LivingIncomingDamageEvent，
         // 那条路径根本到不了 —— 审计指出的"上限对生物失效"就是这里漏判。
         if (KunJinKaoSwordItem.getAttackDamageLimit(sword) < KunJinKaoSwordItem.MAX_ATTACK_DAMAGE_LIMIT) {
+            // 伤害上限被调低：这一刀交回原版按普通伤害结算，但仍然要记下"这次是剑打的"，
+            // 否则目标最终被打死后，掉落增强（抢夺）永远不会触发 —— 表现就是"调低上限后抢夺失效"。
+            // 这里只写击杀/抢夺标记，不写处决授权（那会让目标之后的无关死亡被当成处决）。
+            KunJinKaoSwordItem.applyLootingMark(target, sword);
             return false;
         }
         if (!(level instanceof ServerLevel serverLevel)) {
