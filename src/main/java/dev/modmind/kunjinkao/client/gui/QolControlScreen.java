@@ -434,10 +434,16 @@ public final class QolControlScreen extends Screen {
             return;
         }
         int hoveredIndex = rowIndexAt(mouseX, mouseY);
+        // 级联入场：每行比上一行晚 30ms 出现（与 1.21.1 同一套时序）。
+        long openAt = KunJinKaoUi.openTimeOf(this);
+        long now = System.currentTimeMillis();
         for (int i = 0; i < listRows; i++) {
             int index = scroll + i;
             if (index >= visible.size()) {
                 break;
+            }
+            if (now < openAt + i * 30L) {
+                continue;
             }
             drawRow(graphics, visible.get(index), listTop + i * ROW_H, index == hoveredIndex);
         }
@@ -455,9 +461,8 @@ public final class QolControlScreen extends Screen {
         boolean syncing = row == null;
         boolean authorized = !syncing && row.authorized();
 
-        if (hovered) {
-            graphics.fill(rowX, rowY, rowX + rowW, rowY + rowH, COLOR_ROW_HOVER);
-        }
+        // 悬停底色改走公共原语：0..1 平滑插值 + 左侧竖条滑入。
+        KunJinKaoUi.rowBackground(graphics, rowX, rowY, rowW, rowH, hovered);
         graphics.fill(rowX, rowY + ROW_H - 1, rowX + rowW, rowY + ROW_H, COLOR_SEPARATOR);
 
         // 名字列从行首开始，不再留序号徽章的位置。
