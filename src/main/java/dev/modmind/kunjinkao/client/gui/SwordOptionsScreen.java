@@ -728,7 +728,8 @@ public final class SwordOptionsScreen extends Screen {
 
         KunJinKaoUi.panel(graphics, panelX, panelY, panelW, panelH);
         
-        KunJinKaoUi.titleText(graphics, font, title, panelX + 8, panelY + 5);
+        KunJinKaoUi.titleText(graphics, font, title, panelX + 8, panelY + 5,
+                KunJinKaoAnim.easeOutCubic(KunJinKaoAnim.progress(KunJinKaoUi.openTimeOf(this), 560)));
 
         for (int i = 0; i < sectionBoxes.size(); i++) {
             int[] box = sectionBoxes.get(i);
