@@ -336,5 +336,16 @@
   "message.kunjinkao.injection_abort_item_changed": "手上的物品变了",
   "message.kunjinkao.injection_abort_moved": "你移动了",
   "message.kunjinkao.injection_done": "注入完成，这个物品好像有些不一样了。",
-"screen.kunjinkao.area_accel_multiplier": "范围加速倍率"
+"screen.kunjinkao.area_accel_multiplier": "范围加速倍率",
+  "message.kunjinkao.enchant_unknown": "找不到这个附魔",
+  "screen.kunjinkao.enchant.level": "等级",
+  "message.kunjinkao.enchant_need_sword": "手持的不是剑或注入物",
+  "screen.kunjinkao.enchant.mode_book": "做成附魔书",
+  "screen.kunjinkao.enchant.mode_item": "写到手持物",
+  "screen.kunjinkao.enchant.title": "附魔工坊",
+  "message.kunjinkao.enchant_applied": "已附加附魔：%s",
+  "screen.kunjinkao.enchant.none": "未选择附魔",
+  "screen.kunjinkao.enchant.apply": "执行",
+  "screen.kunjinkao.enchant.empty": "当前没有可用附魔",
+  "screen.kunjinkao.enchant": "附魔"
 }

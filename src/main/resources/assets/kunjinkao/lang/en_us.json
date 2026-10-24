@@ -336,5 +336,16 @@
   "message.kunjinkao.injection_abort_item_changed": "the held item changed",
   "message.kunjinkao.injection_abort_moved": "you moved",
   "message.kunjinkao.injection_done": "Injection complete. This item seems different now.",
-"screen.kunjinkao.area_accel_multiplier": "Accel Multiplier"
+"screen.kunjinkao.area_accel_multiplier": "Accel Multiplier",
+  "message.kunjinkao.enchant_unknown": "Unknown enchantment",
+  "screen.kunjinkao.enchant.level": "Level",
+  "message.kunjinkao.enchant_need_sword": "Held item is not a sword or injected item",
+  "screen.kunjinkao.enchant.mode_book": "Make enchanted book",
+  "screen.kunjinkao.enchant.mode_item": "Apply to held item",
+  "screen.kunjinkao.enchant.title": "Enchanting Workshop",
+  "message.kunjinkao.enchant_applied": "Enchantment applied: %s",
+  "screen.kunjinkao.enchant.none": "No enchantment selected",
+  "screen.kunjinkao.enchant.apply": "Apply",
+  "screen.kunjinkao.enchant.empty": "No enchantments available",
+  "screen.kunjinkao.enchant": "Enchant"
 }

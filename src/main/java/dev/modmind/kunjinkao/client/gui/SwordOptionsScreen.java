@@ -191,6 +191,10 @@ public final class SwordOptionsScreen extends Screen {
         panelH = TITLE_H + Math.max(leftColH, rightColH) + SIDE_PAD;
 
         panelX = (width - panelW) / 2;
+        // 附魔工坊入口：放标题栏右上角，不占分区位置，面板高度不用重算。
+        addRenderableWidget(Button.builder(Component.translatable("screen.kunjinkao.enchant"),
+                        b -> Minecraft.getInstance().setScreen(new EnchantScreen(this)))
+                .bounds(panelX + panelW - 76, panelY + 3, 66, 14).build());
         panelY = (height - panelH) / 2;
 
         int leftX = panelX + SIDE_PAD;

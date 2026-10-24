@@ -34,7 +34,7 @@ public final class NetworkHandler {
      * 5 → 6：新增注入两条包（InjectionStartPayload C2S / InjectionStatePayload S2C），
      * 与 1.21.1 侧 30 → 31 对应。
      */
-    public static final String PROTOCOL_VERSION = "6";
+    public static final String PROTOCOL_VERSION = "7";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(KunJinKaoEntry.MOD_ID, "main"),
@@ -219,6 +219,10 @@ public final class NetworkHandler {
         CHANNEL.messageBuilder(InjectionStatePayload.class, nextMessageId++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(InjectionStatePayload::encode).decoder(InjectionStatePayload::decode)
                 .consumerMainThread(InjectionStatePayload::handle).add();
+        // 附魔工坊：把某个附魔做成附魔书或写到手持物上（管理员操作）
+        CHANNEL.messageBuilder(EnchantPayload.class, nextMessageId++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(EnchantPayload::encode).decoder(EnchantPayload::decode)
+                .consumerMainThread(EnchantPayload::handle).add();
     }
 
     /** 统计已注册的消息数，供自检/日志用。 */
