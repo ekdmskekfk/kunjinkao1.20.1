@@ -44,7 +44,19 @@ public final class ZoneSelectionHandler {
             // 不是木棍：直接放行，连取消都不取消 —— 别影响任何人用别的物品点方块。
             return;
         }
-        KunJinKaoQolHandler.trySetZoneCorner(player, event.getPos());
+        if (dev.modmind.kunjinkao.KunJinKaoSwordItem.isSwordLike(event.getItemStack())) {
+            // 注入过的木棍是"剑"，不是框选工具：不拦它，否则玩家拿着注入木棍点箱子/机器时
+            // 会被这里吃掉交互（选区又把这一下取消），表现得像是物品坏了。
+            return;
+        }
+        try {
+            KunJinKaoQolHandler.trySetZoneCorner(player, event.getPos());
+        } catch (RuntimeException e) {
+            // 选区只是便利功能，出任何问题都不该把服务端 tick 线程整个打崩 —— 记一笔就放行。
+            org.slf4j.LoggerFactory.getLogger("KunJinKao").warn(
+                    "[选区] 设置角点失败 pos={} player={}", event.getPos(), player.getGameProfile().getName(), e);
+            return;
+        }
         event.setCanceled(true);
     }
 }
