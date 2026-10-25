@@ -15,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 public final class AdminPasswordScreen extends Screen {
     private EditBox passwordBox;
     /** 提交按钮：等待服务端回包期间禁用，防止反复提交。 */
-    private Button submitButton;
+    private KunJinKaoButton submitButton;
     /** 是否已提交、正在等待服务端结果；等待期间忽略再次提交（包括回车键路径）。 */
     private boolean awaitingResult;
     /** 服务端迟迟不回包时的等待 tick 数（100 tick = 5 秒）。 */
@@ -38,7 +38,7 @@ public final class AdminPasswordScreen extends Screen {
         passwordBox.setMaxLength(64);
         passwordBox.setHint(Component.literal("输入管理员密码"));
         addRenderableWidget(passwordBox);
-        submitButton = addRenderableWidget(Button.builder(Component.literal("验证"), button -> submit())
+        submitButton = addRenderableWidget(KunJinKaoButton.builder(Component.literal("验证"), button -> submit())
                 .bounds(x + 70, y + 72, 80, 20).build());
         setInitialFocus(passwordBox);
     }

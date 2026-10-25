@@ -61,29 +61,29 @@ public final class SwordOptionsScreen extends Screen {
     private final InteractionHand hand;
 
     // ===== 9 个控件 =====
-    private Button blueScreenToggle;
-    private Button areaClearModeButton;
+    private KunJinKaoButton blueScreenToggle;
+    private KunJinKaoButton areaClearModeButton;
     private AttackDamageSlider attackDamageSlider;
-    private Button unbreakableBlockToggle;
+    private KunJinKaoButton unbreakableBlockToggle;
     private MiningSpeedSlider miningSpeedSlider;
     private OreDropMultiplierSlider oreDropMultiplierSlider;
     private LootingLevelSlider lootingLevelSlider;
-    private Button ultimateDeathToggle;
-    private Button quitStrikeToggle;
-    private Button constructionWandToggle;
-    private Button angelCoreToggle;
-    private Button destructionCoreToggle;
-    private Button placementUndoToggle;
-    private Button brushToggle;
-    private Button toolModeButton;
-    private Button lightningRodToggle;
-    private Button wrenchToggle;
-    private Button accelModeButton;
-    private Button accelMultiplierButton;
-    private Button beheadingToggle;
-    private Button spawnEggDropToggle;
-    private Button silkTouchToggle;
-    private Button autoSmeltToggle;
+    private KunJinKaoButton ultimateDeathToggle;
+    private KunJinKaoButton quitStrikeToggle;
+    private KunJinKaoButton constructionWandToggle;
+    private KunJinKaoButton angelCoreToggle;
+    private KunJinKaoButton destructionCoreToggle;
+    private KunJinKaoButton placementUndoToggle;
+    private KunJinKaoButton brushToggle;
+    private KunJinKaoButton toolModeButton;
+    private KunJinKaoButton lightningRodToggle;
+    private KunJinKaoButton wrenchToggle;
+    private KunJinKaoButton accelModeButton;
+    private KunJinKaoButton accelMultiplierButton;
+    private KunJinKaoButton beheadingToggle;
+    private KunJinKaoButton spawnEggDropToggle;
+    private KunJinKaoButton silkTouchToggle;
+    private KunJinKaoButton autoSmeltToggle;
 
     // ===== 分页 =====
     /** 0 = 设置页，1 = 放置记录页。 */
@@ -91,14 +91,14 @@ public final class SwordOptionsScreen extends Screen {
     /** 放置记录页当前页。 */
     private int recordPage;
 
-    private Button areaModeButton;
-    private Button pauseSizeButton;
-    private Button areaAccelSizeButton;
-    private Button recordsPrevButton;
-    private Button recordsBackButton;
-    private Button openRecordsButton;
-    private Button areaAccelMultiplierButton;
-    private Button recordsNextButton;
+    private KunJinKaoButton areaModeButton;
+    private KunJinKaoButton pauseSizeButton;
+    private KunJinKaoButton areaAccelSizeButton;
+    private KunJinKaoButton recordsPrevButton;
+    private KunJinKaoButton recordsBackButton;
+    private KunJinKaoButton openRecordsButton;
+    private KunJinKaoButton areaAccelMultiplierButton;
+    private KunJinKaoButton recordsNextButton;
     /** 放置记录页每页显示几条。 */
     private static final int RECORDS_PER_PAGE = 7;
     /** 记录页每行行距，比按钮略高，免得文字贴着上一行。 */
@@ -285,7 +285,7 @@ public final class SwordOptionsScreen extends Screen {
         int navX = panelX + panelW - SIDE_PAD - navW * 2 - 4;
         int navY = panelY + 1;
 
-        Button prev = addButton(navX, navY, navW, () -> {
+        KunJinKaoButton prev = addButton(navX, navY, navW, () -> {
             if (page > 0) {
                 page--;
                 recordPage = 0;
@@ -295,7 +295,7 @@ public final class SwordOptionsScreen extends Screen {
         prev.setMessage(Component.translatable("screen.kunjinkao.page_prev"));
         prev.active = page > 0;
 
-        Button next = addButton(navX + navW + 4, navY, navW, () -> {
+        KunJinKaoButton next = addButton(navX + navW + 4, navY, navW, () -> {
             if (page < PAGE_COUNT - 1) {
                 page++;
                 recordPage = 0;
@@ -309,7 +309,7 @@ public final class SwordOptionsScreen extends Screen {
         // 它是全局入口（面板管的是玩家自己的功能，跟手上有哪把剑无关），所以每一页都显示，
         // 而不是只在设置页出现 —— 在放置记录页想顺手开一下面板是常事。
         int entryW = 72;
-        Button openQol = addButton(navX - 4 - entryW, navY, entryW, () -> {
+        KunJinKaoButton openQol = addButton(navX - 4 - entryW, navY, entryW, () -> {
             if (this.minecraft == null) {
                 return;
             }
@@ -359,7 +359,7 @@ public final class SwordOptionsScreen extends Screen {
         areaAccelMultiplierButton = addButton(leftX, contentTop + ROW_H * 2, btnW,
                 this::cycleAreaAccelMultiplier);
         // 附魔工坊入口：区域页第三行右半边本来就空着，放这里不占额外高度，也不会和翻页按钮抢位置。
-        addRenderableWidget(Button.builder(Component.translatable("screen.kunjinkao.enchant"),
+        addRenderableWidget(KunJinKaoButton.builder(Component.translatable("screen.kunjinkao.enchant"),
                         b -> Minecraft.getInstance().setScreen(new EnchantScreen(this)))
                 .bounds(rightX, contentTop + ROW_H * 2, btnW, BTN_H).build());
 
@@ -440,7 +440,7 @@ public final class SwordOptionsScreen extends Screen {
             PlacementSyncPayload.Entry captured = entry;
             // 这个按钮是在循环里现建的，不在 refreshLabels 的覆盖范围内 ——
             // 必须当场把文字设上，否则就是个空白按钮（addButton 默认给的是 empty）。
-            Button revoke = addButton(panelX + panelW - SIDE_PAD - BOX_PAD - revokeW, y, revokeW,
+            KunJinKaoButton revoke = addButton(panelX + panelW - SIDE_PAD - BOX_PAD - revokeW, y, revokeW,
                     () -> revokeRecord(captured));
             revoke.setMessage(Component.translatable("screen.kunjinkao.record_revoke"));
         }
@@ -711,8 +711,8 @@ public final class SwordOptionsScreen extends Screen {
         }
         closeSliderInput();
     }
-    private Button addButton(int x, int y, int w, Runnable action) {
-        return addRenderableWidget(Button.builder(Component.empty(), b -> action.run())
+    private KunJinKaoButton addButton(int x, int y, int w, Runnable action) {
+        return addRenderableWidget(KunJinKaoButton.builder(Component.empty(), b -> action.run())
                 .bounds(x, y, w, BTN_H)
                 .build());
     }

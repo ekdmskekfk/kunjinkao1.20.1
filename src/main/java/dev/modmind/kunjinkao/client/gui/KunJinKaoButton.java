@@ -1,9 +1,13 @@
 package dev.modmind.kunjinkao.client.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+
+import java.util.function.Consumer;
 
 /**
  * 自绘按钮：玻璃底 + 青色描边 + 悬停渐亮 + 按下回弹，替掉原版 {@code Button}。
@@ -19,8 +23,11 @@ import net.minecraft.network.chat.Component;
  *   <li>禁用：压暗文字与描边，不响应点击。</li>
  * </ul>
  *
- * <p>{@code accent} 用于"主操作"（例如附魔工坊的执行），底色更青、左侧带一条强调竖条，
- * 让玩家一眼看出该点哪个。</p>
+ * <p>{@code accent} 用于"主操作"，底色更青、左侧带一条强调竖条。</p>
+ *
+ * <p><b>为什么带一个 Builder</b>：各界面原来写的是 {@code Button.builder(msg, b -> ...).bounds(...).build()}，
+ * 提供一个同名同形的方法就能<b>只改类名</b>完成替换，不用把几十处调用点全部改写成构造器形式；
+ * 回调参数也从 {@code Button} 变成 {@code KunJinKaoButton}，{@code setMessage} 等用法保持不变。</p>
  */
 public class KunJinKaoButton extends AbstractWidget {
 
@@ -34,12 +41,13 @@ public class KunJinKaoButton extends AbstractWidget {
     private static final int FILL_DISABLED = 0xC0101418;
     private static final int TEXT_DISABLED = 0xFF55636B;
 
-    private final Runnable action;
-    private final boolean accent;
+    private Runnable action;
+    private Consumer<KunJinKaoButton> consumer;
+    private boolean accent;
 
     /** 按下强度 1 → 0，用于"按下去再弹回来"的位移。 */
     private float press;
-    private long lastFrameMillis;
+    private long lastFrameMillis = System.currentTimeMillis();
 
     public KunJinKaoButton(int x, int y, int width, int height, Component message, Runnable action) {
         this(x, y, width, height, message, action, false);
@@ -50,8 +58,76 @@ public class KunJinKaoButton extends AbstractWidget {
         super(x, y, width, height, message);
         this.action = action;
         this.accent = accent;
-        this.lastFrameMillis = System.currentTimeMillis();
     }
+
+    // ===== Builder（与 Button.builder 同形，便于整体替换）=====
+
+    public static Builder builder(Component message, Consumer<KunJinKaoButton> onPress) {
+        return new Builder(message, onPress);
+    }
+
+    public static final class Builder {
+        private final Component message;
+        private final Consumer<KunJinKaoButton> onPress;
+        private int x;
+        private int y;
+        private int width = 150;
+        private int height = 20;
+        private boolean accent;
+        private Tooltip tooltip;
+
+        Builder(Component message, Consumer<KunJinKaoButton> onPress) {
+            this.message = message;
+            this.onPress = onPress;
+        }
+
+        public Builder bounds(int x, int y, int width, int height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
+        public Builder pos(int x, int y) {
+            this.x = x;
+            this.y = y;
+            return this;
+        }
+
+        public Builder size(int width, int height) {
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
+        public Builder width(int width) {
+            this.width = width;
+            return this;
+        }
+
+        public Builder tooltip(Tooltip tooltip) {
+            this.tooltip = tooltip;
+            return this;
+        }
+
+        /** 主操作样式：底色更青、左侧强调条。 */
+        public Builder accent() {
+            this.accent = true;
+            return this;
+        }
+
+        public KunJinKaoButton build() {
+            KunJinKaoButton button = new KunJinKaoButton(x, y, width, height, message, null, accent);
+            button.consumer = onPress;
+            if (tooltip != null) {
+                button.setTooltip(tooltip);
+            }
+            return button;
+        }
+    }
+
+    // ===== 绘制 =====
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
@@ -89,22 +165,26 @@ public class KunJinKaoButton extends AbstractWidget {
 
         // 主操作：左侧强调竖条，悬停时更亮
         if (accent && active) {
-            graphics.fill(x, y, x + 2, y + height, KunJinKaoUi.alpha(KunJinKaoUi.BORDER_INNER, 0.7F + 0.3F * hover));
+            graphics.fill(x, y, x + 2, y + height,
+                    KunJinKaoUi.alpha(KunJinKaoUi.BORDER_INNER, 0.7F + 0.3F * hover));
         }
         // 顶部一条极淡高光，让按钮看起来是"玻璃块"而不是色块
         if (active) {
-            graphics.fill(x + 1, y + 1, x + width - 1, y + 2, KunJinKaoUi.alpha(0xFFFFFFFF, 0.05F + 0.04F * hover));
+            graphics.fill(x + 1, y + 1, x + width - 1, y + 2,
+                    KunJinKaoUi.alpha(0xFFFFFFFF, 0.05F + 0.04F * hover));
         }
 
         int textColor = active ? KunJinKaoUi.TEXT_TITLE : TEXT_DISABLED;
-        graphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font,
-                getMessage(), x + width / 2, y + (height - 8) / 2, textColor);
+        graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(),
+                x + width / 2, y + (height - 8) / 2, textColor);
     }
 
     @Override
     public void onClick(double mouseX, double mouseY) {
         press = 1.0F;
-        if (action != null) {
+        if (consumer != null) {
+            consumer.accept(this);
+        } else if (action != null) {
             action.run();
         }
     }
