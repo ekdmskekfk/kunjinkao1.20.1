@@ -106,7 +106,7 @@ public class KunJinKaoKeyBindings {
     public static final KeyMapping TOGGLE_ZONE_SELECTION = new KeyMapping(
             "key.kunjinkao.toggle_zone_selection",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_H,
+            GLFW.GLFW_KEY_N,
             CATEGORY
     );
 
