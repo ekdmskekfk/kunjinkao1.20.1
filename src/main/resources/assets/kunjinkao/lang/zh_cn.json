@@ -347,5 +347,8 @@
   "screen.kunjinkao.enchant.none": "未选择附魔",
   "screen.kunjinkao.enchant.apply": "执行",
   "screen.kunjinkao.enchant.empty": "当前没有可用附魔",
-  "screen.kunjinkao.enchant": "附魔"
+  "screen.kunjinkao.enchant": "附魔",
+  "key.kunjinkao.toggle_zone_selection": "切换木棍框选",
+  "message.kunjinkao.zone_selection_off": "木棍框选已关闭（木棍恢复原版行为）",
+  "message.kunjinkao.zone_selection_on": "木棍框选已开启"
 }

@@ -49,6 +49,10 @@ public final class ZoneSelectionHandler {
             // 会被这里吃掉交互（选区又把这一下取消），表现得像是物品坏了。
             return;
         }
+        if (dev.modmind.kunjinkao.world.ZoneSelection.isSelectionDisabled(player)) {
+            // 玩家用按键关掉了框选：木棍这一下交回原版（拉杆、箱子照常响应），也不取消事件
+            return;
+        }
         try {
             KunJinKaoQolHandler.trySetZoneCorner(player, event.getPos());
         } catch (RuntimeException e) {

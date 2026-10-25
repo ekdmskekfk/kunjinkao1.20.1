@@ -42,6 +42,8 @@ public record SimpleActionPayload(int actionId) {
     public static final int ZONE_CANCEL = 8;
     /** 选区作业（127）：对当前选区执行「放置」。接在 8 之后，不回头改已有取值。 */
     public static final int ZONE_EXECUTE_PLACE = 9;
+    /** 10：切换「木棍右键框选」开关（管理员/玩家自己都可切）。 */
+    public static final int TOGGLE_ZONE_SELECTION = 10;
 
     public static void encode(SimpleActionPayload payload, FriendlyByteBuf buf) {
         buf.writeVarInt(payload.actionId);
@@ -67,6 +69,7 @@ public record SimpleActionPayload(int actionId) {
                 case ZONE_EXECUTE_BREAK -> KunJinKaoQolHandler.handleZoneExecute(sender, ZoneExcavationJob.MODE_BREAK);
                 case ZONE_EXECUTE_PLACE -> KunJinKaoQolHandler.handleZoneExecute(sender, ZoneExcavationJob.MODE_PLACE);
                 case ZONE_CANCEL -> KunJinKaoQolHandler.handleZoneCancel(sender);
+            case TOGGLE_ZONE_SELECTION -> KunJinKaoQolHandler.toggleZoneSelection(sender);
                 default -> {
                     // 未知 actionId：忽略，等价于原来收到一个不认识的空载荷包。
                 }

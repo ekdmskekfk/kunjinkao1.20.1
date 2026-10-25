@@ -73,6 +73,7 @@ public class KunJinKaoClientEvents {
         handleInject();
         handleOpenAdminPassword();
         handleUndoPlacement();
+        handleToggleZoneSelection();
         handleCycleAreaMode();
         handleToggleWrench();
         handleCollectBlock();
@@ -286,6 +287,20 @@ public class KunJinKaoClientEvents {
      * <p>手的选择：主手有东西就用主手；主手空着才用副手 ——
      * 否则副手拿着盾牌/火把时会莫名其妙把副手的东西注入了。</p>
      */
+    /**
+     * H 键：切换「木棍右键框选」。关掉后木棍这一下交回原版（拉杆、箱子照常响应），
+     * 再按一次恢复。状态在服务端，客户端只负责把按键报上去。
+     */
+    private static void handleToggleZoneSelection() {
+        if (!KunJinKaoKeyBindings.TOGGLE_ZONE_SELECTION.consumeClick()) {
+            return;
+        }
+        if (getLocalPlayer() == null) {
+            return;
+        }
+        NetworkHandler.sendToServer(new SimpleActionPayload(SimpleActionPayload.TOGGLE_ZONE_SELECTION));
+    }
+
     private static void handleInject() {
         if (!KunJinKaoKeyBindings.INJECT.consumeClick()) {
             return;

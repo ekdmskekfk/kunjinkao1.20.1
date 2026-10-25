@@ -311,6 +311,16 @@ public final class KunJinKaoQolHandler {
     }
 
     /** 取消：正在跑就停作业，否则清掉当前选区。 */
+    /** 切换「木棍右键框选」：关掉后木棍恢复原版行为。动作栏提示当前状态。 */
+    public static void toggleZoneSelection(net.minecraft.world.entity.player.Player player) {
+        if (!(player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)) {
+            return;
+        }
+        boolean enabled = dev.modmind.kunjinkao.world.ZoneSelection.toggleSelection(serverPlayer);
+        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                enabled ? "message.kunjinkao.zone_selection_on" : "message.kunjinkao.zone_selection_off"), true);
+    }
+
     public static void handleZoneCancel(Player source) {
         if (!(source instanceof ServerPlayer player)) {
             return;

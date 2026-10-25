@@ -347,5 +347,8 @@
   "screen.kunjinkao.enchant.none": "No enchantment selected",
   "screen.kunjinkao.enchant.apply": "Apply",
   "screen.kunjinkao.enchant.empty": "No enchantments available",
-  "screen.kunjinkao.enchant": "Enchant"
+  "screen.kunjinkao.enchant": "Enchant",
+  "key.kunjinkao.toggle_zone_selection": "Toggle stick zone selection",
+  "message.kunjinkao.zone_selection_off": "Stick zone selection OFF (stick behaves normally)",
+  "message.kunjinkao.zone_selection_on": "Stick zone selection ON"
 }

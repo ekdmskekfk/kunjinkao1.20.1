@@ -102,6 +102,14 @@ public class KunJinKaoKeyBindings {
      * 开发计划里建议默认 {@code J}，但 {@code J} 早就给了伪装，所以改用 {@code G}
      * （原版未占用，也对应"功能"）。与其它按键一样可以在"选项 → 控制"里改绑。
      */
+    /** H 键：切换「木棍右键框选」开关；关掉后木棍恢复原版行为。 */
+    public static final KeyMapping TOGGLE_ZONE_SELECTION = new KeyMapping(
+            "key.kunjinkao.toggle_zone_selection",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_H,
+            CATEGORY
+    );
+
     public static final KeyMapping OPEN_QOL_PANEL = new KeyMapping(
             "key.kunjinkao.open_qol_panel",
             InputConstants.Type.KEYSYM,

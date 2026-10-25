@@ -24,6 +24,29 @@ public final class ZoneSelection {
 
     private static final Map<UUID, Corners> SELECTIONS = new HashMap<>();
 
+    /** 关掉框选的玩家。木棍右键因此交回原版行为，直到再按一次开关键。 */
+    private static final java.util.Set<UUID> SELECTION_DISABLED = new java.util.HashSet<>();
+
+    /** 该玩家的框选是否被按键关掉了。 */
+    public static boolean isSelectionDisabled(ServerPlayer player) {
+        return SELECTION_DISABLED.contains(player.getUUID());
+    }
+
+    /**
+     * 切换框选开关。关掉时顺手把半截选区清掉 —— 否则下次打开会接着几天前的角点。
+     *
+     * @return 切换后框选是否仍启用
+     */
+    public static boolean toggleSelection(ServerPlayer player) {
+        UUID id = player.getUUID();
+        if (SELECTION_DISABLED.remove(id)) {
+            return true;
+        }
+        SELECTION_DISABLED.add(id);
+        SELECTIONS.remove(id);
+        return false;
+    }
+
     /** 一名玩家当前的两个角点；未设置的那个为 null。 */
     public record Corners(ResourceLocation dimension, BlockPos a, BlockPos b) {
     }
