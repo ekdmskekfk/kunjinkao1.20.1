@@ -47,7 +47,8 @@ public final class EnchantScreen extends Screen {
     private int listLeft;
     private int listWidth;
 
-    private Button applyButton;
+    private KunJinKaoButton modeButton;
+    private KunJinKaoButton applyButton;
 
     public EnchantScreen(Screen parent) {
         super(Component.translatable("screen.kunjinkao.enchant.title"));
@@ -64,18 +65,18 @@ public final class EnchantScreen extends Screen {
         collectEnchantments();
 
         int footerY = panelY + 26 + LIST_H + 10;
-        addRenderableWidget(Button.builder(Component.literal("-"), b -> level = Math.max(1, level - 1))
-                .bounds(panelX + 12, footerY, 20, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("+"), b -> level = Math.min(255, level + 1))
-                .bounds(panelX + 74, footerY, 20, 18).build());
-        addRenderableWidget(Button.builder(modeLabel(), b -> {
+        addRenderableWidget(new KunJinKaoButton(panelX + 12, footerY, 20, 18, Component.literal("-"),
+                () -> level = Math.max(1, level - 1)));
+        addRenderableWidget(new KunJinKaoButton(panelX + 74, footerY, 20, 18, Component.literal("+"),
+                () -> level = Math.min(255, level + 1)));
+        modeButton = addRenderableWidget(new KunJinKaoButton(panelX + 100, footerY, 150, 18, modeLabel(), () -> {
             mode = mode == EnchantPayload.MODE_BOOK ? EnchantPayload.MODE_ITEM : EnchantPayload.MODE_BOOK;
-            b.setMessage(modeLabel());
-        }).bounds(panelX + 100, footerY, 150, 18).build());
-        applyButton = addRenderableWidget(Button.builder(Component.translatable("screen.kunjinkao.enchant.apply"),
-                b -> apply()).bounds(panelX + 254, footerY, 114, 18).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-                .bounds(panelX + PANEL_W - 96, panelY + PANEL_H - 26, 84, 18).build());
+            modeButton.setMessage(modeLabel());
+        }));
+        applyButton = addRenderableWidget(new KunJinKaoButton(panelX + 254, footerY, 114, 18,
+                Component.translatable("screen.kunjinkao.enchant.apply"), this::apply, true));
+        addRenderableWidget(new KunJinKaoButton(panelX + PANEL_W - 96, panelY + PANEL_H - 26, 84, 18,
+                Component.translatable("gui.done"), this::onClose));
         updateApplyState();
     }
 
@@ -125,7 +126,8 @@ public final class EnchantScreen extends Screen {
         // 1.20.1 的 Screen#render 不会自己调 renderBackground，必须在这里显式画。
         renderBackground(graphics);
         KunJinKaoUi.panel(graphics, panelX, panelY, PANEL_W, PANEL_H);
-        KunJinKaoUi.titleBar(graphics, font, title, panelX, panelY, PANEL_W);
+        KunJinKaoUi.titleBar(graphics, font, title, panelX, panelY, PANEL_W,
+                KunJinKaoAnim.easeOutCubic(KunJinKaoAnim.progress(KunJinKaoUi.openTimeOf(this), 620)));
         drawList(graphics, mouseX, mouseY);
         drawFooter(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
@@ -144,6 +146,10 @@ public final class EnchantScreen extends Screen {
             int index = scroll + i;
             if (index >= entries.size()) {
                 break;
+            }
+            // 级联入场：每行比上一行晚 30ms 出现
+            if (System.currentTimeMillis() < KunJinKaoUi.openTimeOf(this) + i * 30L) {
+                continue;
             }
             int rowY = listTop + i * ROW_H;
             boolean hovered = mouseX >= listLeft && mouseX < listLeft + listWidth

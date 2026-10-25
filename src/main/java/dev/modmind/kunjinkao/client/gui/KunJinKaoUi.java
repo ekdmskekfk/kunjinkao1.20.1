@@ -113,6 +113,12 @@ public final class KunJinKaoUi {
         scanlines(graphics, x + 1, y + 1, w - 2, h - 2);
         // 四角括号也画在外框上，不再侵占内容区
         corners(graphics, x - 1, y - 1, w + 2, h + 2);
+        // 刷新扫线：一条横贯面板的亮线每 2.6s 从上往下走一遍，最直观的"活着"的证据
+        int scanY = y + 1 + (int) (KunJinKaoAnim.cycle(2600) * Math.max(1, h - 3));
+        graphics.fill(x + 1, scanY, x + w - 1, scanY + 2, alpha(BORDER_GLOW, 0.10F));
+        // 外圈呼吸光：整个面板轮廓缓慢明暗
+        float breathe = KunJinKaoAnim.pulse(2400);
+        frame(graphics, x - 2, y - 2, w + 4, h + 4, alpha(BORDER_GLOW, 0.05F + 0.11F * breathe));
     }
 
     /** 只画一圈 1px 边框。 */
@@ -159,12 +165,12 @@ public final class KunJinKaoUi {
         if (perimeter <= 0) {
             return;
         }
-        int len = Math.max(24, perimeter / 6);
+        int len = Math.max(40, perimeter / 3);
         int head = (int) (KunJinKaoAnim.cycle(FLOW_PERIOD) * perimeter);
         for (int i = 0; i < len; i++) {
             int d = (head - i + perimeter) % perimeter;
             float fade = 1.0F - i / (float) len;
-            int color = alpha(BORDER_GLOW, 0.55F * fade * fade);
+            int color = alpha(BORDER_GLOW, 0.95F * fade * fade);
             drawPerimeterDot(graphics, x, y, w, h, d, color);
         }
     }
@@ -173,21 +179,21 @@ public final class KunJinKaoUi {
                                          int distance, int color) {
         int d = distance;
         if (d < w) {
-            graphics.fill(x + d, y, x + d + 1, y + 1, color);
+            graphics.fill(x + d, y, x + d + 1, y + 2, color);
             return;
         }
         d -= w;
         if (d < h) {
-            graphics.fill(x + w - 1, y + d, x + w, y + d + 1, color);
+            graphics.fill(x + w - 2, y + d, x + w, y + d + 1, color);
             return;
         }
         d -= h;
         if (d < w) {
-            graphics.fill(x + w - 1 - d, y + h - 1, x + w - d, y + h, color);
+            graphics.fill(x + w - 1 - d, y + h - 2, x + w - d, y + h, color);
             return;
         }
         d -= w;
-        graphics.fill(x, y + h - 1 - d, x + 1, y + h - d, color);
+        graphics.fill(x, y + h - 1 - d, x + 2, y + h - d, color);
     }
 
     // ===== 标题与分区 =====
@@ -199,6 +205,15 @@ public final class KunJinKaoUi {
      */
     public static int titleBar(GuiGraphics graphics, Font font, Component title,
                                int x, int y, int w) {
+        return titleBar(graphics, font, title, x, y, w, 1.0F);
+    }
+
+    /**
+     * 带打字机动效的标题栏：{@code reveal} 从 0 到 1，标题逐字出现，末尾带闪烁光标。
+     * {@code reveal >= 1} 时与普通标题栏完全一致。
+     */
+    public static int titleBar(GuiGraphics graphics, Font font, Component title,
+                               int x, int y, int w, float reveal) {
         graphics.fill(x + 2, y + 2, x + w - 2, y + TITLE_BAR, TITLE_BG);
         // 渐变底：左边主色、右边透明，比纯色条更有"发光面板"的感觉
         verticalGradient(graphics, x + 2, y + 2, w - 4, TITLE_BAR - 2, TITLE_GRADIENT, 0x0057CFFF);
@@ -210,7 +225,13 @@ public final class KunJinKaoUi {
         String glyph = KunJinKaoPalette.MOJIBAKE;
         graphics.drawString(font, glyph, x + PAD, y + 5, CORNER, false);
         int glyphWidth = font.width(glyph) + 4;
-        graphics.drawString(font, title, x + PAD + glyphWidth, y + 5, TEXT_TITLE, false);
+        String full = title.getString();
+        String shown = typed(full, KunJinKaoAnim.clamp01(reveal));
+        graphics.drawString(font, shown, x + PAD + glyphWidth, y + 5, TEXT_TITLE, false);
+        if (reveal < 1.0F && KunJinKaoAnim.cycle(600) < 0.5F) {
+            int cursorX = x + PAD + glyphWidth + font.width(shown) + 1;
+            graphics.fill(cursorX, y + 5, cursorX + 1, y + 13, CORNER);
+        }
         // 底部渐隐线：左亮右暗
         int lineY = y + TITLE_BAR;
         fadeLine(graphics, x + 2, lineY, w - 4, BORDER_INNER);
@@ -222,7 +243,7 @@ public final class KunJinKaoUi {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int band = Math.max(28, w / 5);
+        int band = Math.max(40, w / 4);
         int span = w + band * 2;
         int head = x - band + (int) (KunJinKaoAnim.cycle(SWEEP_PERIOD) * span);
         for (int i = 0; i < band; i++) {
@@ -231,7 +252,7 @@ public final class KunJinKaoUi {
                 continue;
             }
             float fade = 1.0F - Math.abs(i - band / 2.0F) / (band / 2.0F);
-            graphics.fill(px, y, px + 1, y + h, alpha(BORDER_GLOW, 0.10F * fade));
+            graphics.fill(px, y, px + 1, y + h, alpha(BORDER_GLOW, 0.28F * fade));
         }
     }
 
