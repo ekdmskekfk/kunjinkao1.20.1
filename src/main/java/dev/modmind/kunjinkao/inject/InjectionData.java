@@ -83,6 +83,12 @@ public final class InjectionData {
         }
         boolean already = isInjected(stack);
 
+        // 1.20.1 的 ItemStack#copy() 是"共用同一个 CompoundTag 引用"（setTag 只赋引用）。
+        // 直接从 getOrCreateTag() 上改，会把同一组里的其它副本一起改掉 —— 表现就是
+        // 「注入 1 个，整组 64 个全变成注入物，拿哪个都能开菜单」。这里先复制一份再写回，
+        // 只让这一个栈拿到新标签。
+        CompoundTag isolated = stack.getTag() == null ? new CompoundTag() : stack.getTag().copy();
+        stack.setTag(isolated);
         stack.getOrCreateTag().putBoolean(INJECTED_KEY, true);
         appendLore(stack);
         applyCombatStats(stack);
