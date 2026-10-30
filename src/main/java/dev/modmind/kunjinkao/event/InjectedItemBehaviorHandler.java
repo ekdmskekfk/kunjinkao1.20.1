@@ -148,7 +148,7 @@ public final class InjectedItemBehaviorHandler {
      * 它是乘法修正（水下除以潜水速度、空中 ×5）。我这里是"设基础值"，
      * 排在它后面就会把它的结果整个覆盖 —— 注入物品的凌空采掘/水下挖掘会静默失效。</p>
      */
-    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         ItemStack stack = event.getEntity().getMainHandItem();
         if (!applies(stack)) {

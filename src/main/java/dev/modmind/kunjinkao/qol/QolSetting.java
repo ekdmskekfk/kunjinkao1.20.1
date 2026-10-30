@@ -193,7 +193,10 @@ public enum QolSetting {
      * 做成开关是为了让管理员能临时变回普通人 —— 想正常挨打、测试别的模组、
      * 或者单纯不想无敌时，不必把物品丢掉。默认开启，保持加开关之前的行为。</p>
      */
-    INVINCIBLE(29, 0, Category.SURVIVAL, Scope.PERSONAL, Kind.TOGGLE, 0, 1, 1, "");
+    INVINCIBLE(29, 0, Category.SURVIVAL, Scope.PERSONAL, Kind.TOGGLE, 0, 1, 1, ""),
+
+    /** 盔甲装饰：开启后客户端把身上所有盔甲渲染成固定外观（不改物品）。 */
+    ARMOR_DECORATION(30, 0, Category.COSMETIC, Scope.PERSONAL, Kind.TOGGLE, 0, 1, 0, "");
 
     /**
      * 面板顶部的分类标签。

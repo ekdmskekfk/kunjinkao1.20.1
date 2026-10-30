@@ -350,5 +350,6 @@
   "screen.kunjinkao.enchant": "附魔",
   "key.kunjinkao.toggle_zone_selection": "切换木棍框选",
   "message.kunjinkao.zone_selection_off": "木棍框选已关闭（木棍恢复原版行为）",
-  "message.kunjinkao.zone_selection_on": "木棍框选已开启"
+  "message.kunjinkao.zone_selection_on": "木棍框选已开启",
+  "screen.kunjinkao.qol.armor_decoration": "盔甲装饰"
 }

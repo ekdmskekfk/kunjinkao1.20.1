@@ -350,5 +350,6 @@
   "screen.kunjinkao.enchant": "Enchant",
   "key.kunjinkao.toggle_zone_selection": "Toggle stick zone selection",
   "message.kunjinkao.zone_selection_off": "Stick zone selection OFF (stick behaves normally)",
-  "message.kunjinkao.zone_selection_on": "Stick zone selection ON"
+  "message.kunjinkao.zone_selection_on": "Stick zone selection ON",
+  "screen.kunjinkao.qol.armor_decoration": "Armor decoration"
 }

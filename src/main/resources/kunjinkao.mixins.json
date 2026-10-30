@@ -8,7 +8,9 @@
     "LevelPauseMixin",
     "ItemStackDurabilityMixin",
     "BlockPlayerDestroyMixin",
-    "EntityFireImmuneMixin"
+    "EntityFireImmuneMixin",
+    "ItemStackDestroySpeedMixin",
+    "ArmorDecorationMixin"
   ],
   "injectors": {
     "defaultRequire": 1

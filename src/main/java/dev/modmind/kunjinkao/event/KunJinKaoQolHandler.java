@@ -641,7 +641,7 @@ public final class KunJinKaoQolHandler {
             // 装饰（201 称号牌 / 202 浮游挂件 / 203 光环拖尾）同样没有"挂到玩家身上"的动作：
             // 它们由 tickCosmetics 每 tick 推进，开关一改下一 tick（50 ms）就出现或消失，
             // 不需要在这里补一次，也不该在这里另写一份 —— 两份逻辑迟早在某一边漏掉一处。
-            case COSMETIC_TITLE, COSMETIC_ORBIT, COSMETIC_AURA -> {
+            case COSMETIC_TITLE, COSMETIC_ORBIT, COSMETIC_AURA, ARMOR_DECORATION -> {
             }
             // 屹立不倒（204）同样没有"挂上去"的状态：客户端每 tick 现查现用（StandFirmClient），
             // 服务端的两个事件处理器也是现查现用。开关一改下一 tick 就生效。
