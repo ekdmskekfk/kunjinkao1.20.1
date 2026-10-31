@@ -33,9 +33,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(HumanoidArmorLayer.class)
 public class ArmorDecorationMixin {
 
-    /** 原版自带的 64×32 人形盔甲图层。 */
-    private static final ResourceLocation DECORATION_TEXTURE =
-            new ResourceLocation("minecraft", "textures/models/armor/leather_layer_1_overlay.png");
+    /** 层 1（头盔 / 胸甲 / 靴子）：maid xoxo 的基础层与叠加层合成图。 */
+    private static final ResourceLocation LAYER_1 =
+            new ResourceLocation("kunjinkao", "textures/models/armor/maid_layer_1.png");
+
+    /** 层 2（护腿）：同一套资源包的 layer_2 合成图。 */
+    private static final ResourceLocation LAYER_2 =
+            new ResourceLocation("kunjinkao", "textures/models/armor/maid_layer_2.png");
+
 
     @Inject(method = "getArmorResource", at = @At("RETURN"), cancellable = true, remap = false)
     private void kunjinkao$armorDecoration(Entity entity, ItemStack stack, EquipmentSlot slot,
@@ -49,6 +54,6 @@ public class ArmorDecorationMixin {
         if (!QolClientState.isOn(QolSetting.ARMOR_DECORATION)) {
             return;
         }
-        cir.setReturnValue(DECORATION_TEXTURE);
+        cir.setReturnValue(type == null ? LAYER_1 : LAYER_2);
     }
 }
