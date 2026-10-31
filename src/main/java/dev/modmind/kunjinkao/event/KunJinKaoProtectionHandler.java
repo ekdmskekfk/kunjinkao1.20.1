@@ -138,6 +138,28 @@ public class KunJinKaoProtectionHandler {
         player.getPersistentData().remove(ADVENTURE_BUILD_GRANTED_KEY);
     }
 
+    /**
+     * 切维度后强制重发一次能力表。
+     *
+     * <p><b>为什么单靠 tick 修不好</b>：{@link #onPlayerTick} 只在 {@code !abilities.mayfly} 时重发；
+     * 而切维度改的是**客户端**那份 {@code LocalPlayer} 能力表（维度的 Level 重建时被重置），
+     * 服务端这边 {@code mayfly} 一直是 true → 条件永远不成立 → 客户端一直不能飞。
+     * 玩家要靠"重新捡起注入物品"触发一次物品同步才恢复，就是这个原因。</p>
+     *
+     * <p>所以在维度切换这个时间点上无条件补发一次，让两端重新对齐。</p>
+     */
+    @SubscribeEvent
+    public void onChangedDimension(net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (player.isSpectator() || !hasSwordInInventory(player)) {
+            return;
+        }
+        player.getAbilities().mayfly = true;
+        player.onUpdateAbilities();
+    }
+
     @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
         LivingEntity target = event.getEntity();
