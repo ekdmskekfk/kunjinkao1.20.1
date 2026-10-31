@@ -282,7 +282,7 @@ public class KunJinKaoProtectionHandler {
                 player.getPersistentData().remove(KILL_BY_OVERWRITE_KEY);
                 return;
             }
-            if (hasSwordInInventory(player)) {
+            if (hasSwordInInventory(player) && isInvincibleEnabled(player)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
                 player.setRemainingFireTicks(0);
